@@ -11,8 +11,7 @@
 #include "io.h"
 #include "adc.h"
 #include "central.h"
-#include "mycrc.h"
-#include "nfv2.h"
+#include "nf/nfv2.h"
 
 #include "usb.h"
 
@@ -32,16 +31,8 @@ NF_STRUCT_ComBuf 	NFComBuf;
 uint8_t USBcommArray[2];
 uint8_t USBcommCnt;
 
-//extern u32 count_out;
-//extern u8 buffer_out[VIRTUAL_COM_PORT_DATA_SIZE];
-
-//extern u8 buffer_in[VIRTUAL_COM_PORT_DATA_SIZE];
-//extern u32 count_in;
-
 uint8_t commArray[2];
-uint8_t commCnt, usbBytesToSend, bufout_iter;	
-
-__ALIGN_BEGIN USB_OTG_CORE_HANDLE    USB_OTG_dev __ALIGN_END ;
+uint8_t commCnt, usbBytesToSend, bufout_iter;
 
 //##                                      #### ######## ################ MAIN
 int main(void)
@@ -56,84 +47,19 @@ int main(void)
 	LED_Config();
 	OUT_Config();
 	ADC_Config();
-	crcInit();
 	USART1_Config();
 	USART4_Config();
 			
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-//	Set_USBClock();
-//	USB_Interrupts_Config();			
-//	USB_Init();
 
-	USBD_Init(&USB_OTG_dev,
-#ifdef USE_USB_OTG_HS 
-            USB_OTG_HS_CORE_ID,
-#else            
-            USB_OTG_FS_CORE_ID,
-#endif  
-            &USR_desc, 
-            &USBD_CDC_cb, 
-            &USR_cb);
+	USB_Config();
 
 	LED_Set(1<<0, //mask
 			1<<0,	//newState
 			1<<0);//blink
-
 	
-	MSense.dist[0] = 5;
-	MSense.dist[1] = 6;
-	MSense.dist[2] = 7;
-	MSense.dist[3] = 8;
-	MSense.dist[4] = 9;
-	MSense.dist[5] = 10;
-	MSense.dist[6] = 11;
-	MSense.dist[7] = 10;
-	
-	/*NFComBuf.ReadAnalogInputs.data[0] = 5;
-	NFComBuf.ReadAnalogInputs.data[1] = 6;
-	NFComBuf.ReadAnalogInputs.data[2] = 7;
-	NFComBuf.ReadAnalogInputs.data[3] = 8;
-	NFComBuf.ReadAnalogInputs.data[4] = 9;
-	NFComBuf.ReadAnalogInputs.data[5] = 10;
-	NFComBuf.ReadAnalogInputs.data[6] = 11;
-	NFComBuf.ReadAnalogInputs.data[7] = 10;*/
-
-	
-	NFComBuf.ReadDeviceVitals.data[0] = 24500;
-	NFComBuf.ReadDeviceVitals.data[1] = 24000;
-	NFComBuf.ReadDeviceVitals.data[2] = 12000;
-	NFComBuf.ReadDeviceVitals.data[3] = 5000;
-	NFComBuf.ReadDeviceVitals.data[4] = 24500;
-	NFComBuf.ReadDeviceVitals.data[5] = 24500;
-	NFComBuf.ReadDeviceVitals.data[6] = 0;
-	NFComBuf.ReadDeviceVitals.data[7] = 0;
-	
-	NFComBuf.myAddress = NF_MainModuleAddress;
-
-	NFComBuf.SetDrivesMode.addr[0] = NF_MotorDrv1Address;
-	NFComBuf.SetDrivesMode.addr[1] = NF_MotorDrv2Address;
-
-	NFComBuf.SetDrivesSpeed.addr[0] = NF_MotorDrv1Address;
-	NFComBuf.SetDrivesSpeed.addr[1] = NF_MotorDrv2Address;
-
-	NFComBuf.ReadDeviceVitals.addr[0] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[1] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[2] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[3] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[4] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[5] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[6] = NF_MainModuleAddress;
-	NFComBuf.ReadDeviceVitals.addr[7] = NF_MainModuleAddress;
-
-	NFComBuf.ReadAnalogInputs.addr[0] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[1] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[2] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[3] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[4] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[5] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[6] = NF_UniMeter1Address;
-	NFComBuf.ReadAnalogInputs.addr[7] = NF_UniMeter1Address;
+	NFv2_Config(&NFComBuf, NF_MainModuleAddress);
 
 	
 	USART1_SendString("Hello!\r\n");

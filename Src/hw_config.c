@@ -271,7 +271,7 @@ void Handle_USBAsynchXfer (void)
     }
     USB_Tx_State = 1; 
     
-#ifdef USE_STM3210C_EVAL
+#ifdef STM32F10X_CL
     USB_SIL_Write(EP1_IN, &USART_Rx_Buffer[USB_Tx_ptr], USB_Tx_length);  
 #else
     UserToPMABufferCopy(&USART_Rx_Buffer[USB_Tx_ptr], ENDP1_TXADDR, USB_Tx_length);
@@ -358,6 +358,29 @@ static void IntToUnicode (uint32_t value , uint8_t *pbuf , uint8_t len)
 }
 #ifdef STM32F10X_CL
 /*******************************************************************************
+* Function Name  : USB_OTG_BSP_uDelay_Configure.
+* Description    : provide delay (usec).
+* Input          : None.
+* Output         : None.
+* Return         : None.
+*******************************************************************************/
+void USB_OTG_BSP_uDelay_Configure (void)
+{
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+
+	/* TIMx clock enable */
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	/* Time base configuration */
+	TIM_TimeBaseStructure.TIM_Period = 60000;
+	TIM_TimeBaseStructure.TIM_Prescaler = 36; // 72000000 / 72 / 20000 = 50Hz; 20000 = 4*5000
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+	/* TIM2 enable counter */
+	TIM_Cmd(TIM2, ENABLE);
+}
+
+/*******************************************************************************
 * Function Name  : USB_OTG_BSP_uDelay.
 * Description    : provide delay (usec).
 * Input          : None.
@@ -366,18 +389,18 @@ static void IntToUnicode (uint32_t value , uint8_t *pbuf , uint8_t len)
 *******************************************************************************/
 void USB_OTG_BSP_uDelay (const uint32_t usec)
 {
-  RCC_ClocksTypeDef  RCC_Clocks;  
+	//RCC_ClocksTypeDef  RCC_Clocks;
 
-  /* Configure HCLK clock as SysTick clock source */
-  SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
-  
-  RCC_GetClocksFreq(&RCC_Clocks);
-  
-  SysTick_Config(usec * (RCC_Clocks.HCLK_Frequency / 1000000));  
-  
-  SysTick->CTRL  &= ~SysTick_CTRL_TICKINT_Msk ;
-  
-  while (!(SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk));
+	/* Configure HCLK clock as SysTick clock source */
+	/*SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
+	RCC_GetClocksFreq(&RCC_Clocks);
+	SysTick_Config(usec * (RCC_Clocks.HCLK_Frequency / 1000000));
+	SysTick->CTRL  &= ~SysTick_CTRL_TICKINT_Msk ;
+	while (!(SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk));*/
+
+	TIM2->CNT = 0;
+	while(TIM2->CNT < usec)
+		;
 }
 #endif /* STM32F10X_CL */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

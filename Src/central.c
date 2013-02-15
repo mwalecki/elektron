@@ -36,13 +36,13 @@ void commandMotors(void){
 	// Command Drive 1
 	commArray[0] = NF_COMMAND_SetDrivesSpeed;
 	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv1Address);
+	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv1Address);
 	USART1_SendNBytes((char*)Usart1.txBuf, bytesToSend);	 
 					  
 	// Command Drive 2
 	commArray[0] = NF_COMMAND_SetDrivesSpeed;
 	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv2Address);
+	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv2Address);
 	USART1_SendNBytes((char*)Usart1.txBuf, bytesToSend);
 	
 	// Command Unimeter 1
@@ -76,7 +76,7 @@ void commandSensors(void){
 	// Command Unimeter 1
 	commArray[0] = NF_COMMAND_ReadAnalogInputs;
 	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NF_UniMeter1Address);
+	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NF_InOut1Address);
 	USART1_SendNBytes((char*)Usart1.txBuf+1, bytesToSend);
 
 	//USART1_SendString(":S0?\r\n");	

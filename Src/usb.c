@@ -20,10 +20,10 @@ void USB_Config(void){
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(USB_CONNECT_PORT, &GPIO_InitStructure);
 #endif
-//	USART_Rx_ptr_in = 0;
-//	USB_Rx_Cnt = 0;
-//	USART_Rx_ptr_out = 0;
-//	USART_Rx_length = 0;
+
+#ifdef STM32F10X_CL
+	USB_OTG_BSP_uDelay_Configure();
+#endif
 
 	// USB Init
 	Set_USBClock();

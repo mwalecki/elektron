@@ -1,6 +1,7 @@
 #include "usart1.h"
 
-	 
+
+extern NF_STRUCT_ComBuf 	NFComBuf;
 extern USART_St		Usart1;
 extern STDOWNCNT_St	STDownCnt[ST_Downcounters];	
 extern MSENSE_St	MSense;			 
@@ -160,7 +161,7 @@ void USART1_IRQHandler(void)
 		// Clear the USARTx Receive interrupt
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 		
-		if(NF_Interpreter(Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
+		if(NF_Interpreter(&NFComBuf, Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
 			Usart1.rxDataReady = 1;
 			// Only Master Mode on USART1
 			//if(commCnt > 0){
@@ -173,40 +174,7 @@ void USART1_IRQHandler(void)
 
 void USART1_Interpreter(u8* buf)
 {
-	_IF_MEMBER_THEN(buf, "*IDN?", 5, 0)
-    {
-		sprintf((char*) Usart1.txBuf, "%s, %s %s", MODULE_NAME, __DATE__, __TIME__);
-		ST_Reset(ST_UsartTxDelay);
-		Usart1.txDataReady = 1;
-	}
-	else
-	_GROUP(buf, ":LED", 4) 
-		_IF_MEMBER_THEN(buf, ":SET", 4, 4)
-			switch(buf[9]){
-				case '0':
-					LED_Set(1<<0, 1<<0, 0);
-					break;
-				case '1':
-					LED_Set(1<<1, 1<<1, 0);
-					break;
-				case '2':
-					LED_Set(1<<2, 1<<2, 0);
-					break;
-			}
-		else  
-		_IF_MEMBER_THEN(buf, ":RES", 4, 4)
-			switch(buf[9]){
-				case '0':
-					LED_Set(1<<0, 0, 0);
-					break;
-				case '1':
-					LED_Set(1<<1, 0, 0);
-					break;
-				case '2':
-					LED_Set(1<<2, 0, 0);
-					break;
-			}
-	_ENDGROUP
+	return;
 }
 
 void	USART1_TXEN_H(void)		{GPIO_SetBits(GPIOD, GPIO_Pin_7);}

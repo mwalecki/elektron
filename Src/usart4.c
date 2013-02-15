@@ -115,7 +115,7 @@ void UART4_IRQHandler(void)
 		// Clear the USARTx Receive interrupt
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);
 		
-		if(NF_Interpreter(Usart4.rxBuf, &Usart4.rxPt, commArray, &commCnt) > 0){		
+		if(NF_Interpreter(&NFComBuf, Usart4.rxBuf, &Usart4.rxPt, commArray, &commCnt) > 0){
 			Reference.leftSpeed = NFComBuf.SetDrivesSpeed.data[0];
 			Reference.rightSpeed = NFComBuf.SetDrivesSpeed.data[1];
 			Reference.srv1pos = NFComBuf.SetServosPosition.data[0];
@@ -126,7 +126,7 @@ void UART4_IRQHandler(void)
 			NFComBuf.dataReceived = 1;
 
 			if(commCnt > 0){
-				bytesToSend = NF_MakeCommandFrame((uint8_t*)Usart4.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
+				bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart4.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
 				USART4_SendNBytes((char*)Usart4.txBuf+1, bytesToSend);
 			}
 		}

@@ -1,5 +1,7 @@
 #include "systick.h"
 
+extern STDOWNCNT_St	STDownCnt[ST_Downcounters];
+
 void SYSTICK_Init(STDOWNCNT_St*	STDownCnt)
 {
 	STDownCnt[0].period = ST_Period0;
@@ -19,3 +21,25 @@ void SYSTICK_Init(STDOWNCNT_St*	STDownCnt)
 //	SysTick_CounterCmd(SysTick_Counter_Enable);
 	SysTick_Config(7200);
 }
+
+void SysTick_Handler(void)
+{	
+	vu8 i=0;
+	for(; i<ST_Downcounters; i++)
+	{
+		if(STDownCnt[i].val != 0)
+			STDownCnt[i].val--;
+		else
+		{
+			STDownCnt[i].val = STDownCnt[i].period;
+			STDownCnt[i].tick = 1;
+		}
+	}
+
+	
+//	if(STDownCnt[ST_MotorProc].tick){
+//		MOTOR_Proc();
+//		STDownCnt[ST_MotorProc].tick = 0;
+//	}
+}
+

@@ -4,11 +4,9 @@
 #include "common.h"	 
 #include <stdio.h>		
 #include <string.h>		
-#include "u1interpreter.h"
-#include "mycrc.h"
 #include "led.h"  
 #include "systick.h"
-#include "nfv2.h"
+#include "nf/nfv2.h"
 			 
 #define USART1_RxFrameSz	16
 					

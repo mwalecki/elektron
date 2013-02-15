@@ -87,9 +87,14 @@ void EP1_IN_Callback (void)
         USART_Rx_ptr_out += USART_Rx_length;
         USART_Rx_length = 0;
       }
+
+#ifdef STM32F10X_CL
+      USB_SIL_Write(EP1_IN, &USART_Rx_Buffer[USB_Tx_ptr], USB_Tx_length);
+#else
       UserToPMABufferCopy(&USART_Rx_Buffer[USB_Tx_ptr], ENDP1_TXADDR, USB_Tx_length);
       SetEPTxCount(ENDP1, USB_Tx_length);
-      SetEPTxValid(ENDP1);  
+      SetEPTxValid(ENDP1);
+#endif
     }
   }
 }
