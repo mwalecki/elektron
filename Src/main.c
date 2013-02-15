@@ -5,6 +5,7 @@
 #include "clock.h"		
 #include "interrupts.h"
 #include "led.h"
+#include "lcd.h"
 #include "systick.h"
 #include "usart1.h"
 #include "usart4.h"
@@ -45,6 +46,7 @@ int main(void)
 	NVIC_Configuration();	// NVIC_Configuration
 	SYSTICK_Init(STDownCnt);
 	LED_Config();
+	LCD_Config();
 	OUT_Config();
 	ADC_Config();
 	USART1_Config();
