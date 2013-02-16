@@ -1,6 +1,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#include <inttypes.h>
 #include "stm32f10x_conf.h"
 
 #define MODULE_NAME			"MW1106 Sedes Main Module mw@mwalecki.pl"

@@ -8,7 +8,7 @@
 
 //##                                      #### ######## ################ PROTOTYPES:
 
-void vLCDTask(void *pvParameters);
+void LCD_Config(void);
 void printChannelInfo(int channel);
 void itoa(int n, char s[]);
 void toVolt(int milivolt, char s[]);

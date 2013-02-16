@@ -1,4 +1,4 @@
-//##                                      #### ######## ################ INCLUDES	 
+//##                                      #### ######## ################ INCLUDES
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
@@ -19,7 +19,8 @@
 //##                                      #### ######## ################ GLOBALS   
 uint8_t				crcTable[256]; 
 USART_St			Usart1, Usart4, USBBufs;
-LED_St				Led;		 
+LED_St				Led;
+ADC_St				ADC;
 STDOWNCNT_St		STDownCnt[ST_Downcounters];	
 REFERENCE_St		Reference;
    
@@ -48,7 +49,7 @@ int main(void)
 	LED_Config();
 	LCD_Config();
 	OUT_Config();
-	ADC_Config();
+	ADCwithDMA_Config();
 	USART1_Config();
 	USART4_Config();
 			
@@ -119,17 +120,17 @@ int main(void)
 			STDownCnt[ST_UsartTxDelay].tick = 0;
 		}		   
 		if(STDownCnt[ST_StatusLed].tick){
-			LED_Proc();
+			//LED_Proc();
 			STDownCnt[ST_StatusLed].tick = 0;
 
-			NFComBuf.ReadDeviceVitals.data[0] = 55 * (readADC1(4)	/4);	//POWER-BATT
-			NFComBuf.ReadDeviceVitals.data[1] = 55 * (readADC1(13)	/4);	//24V
-			NFComBuf.ReadDeviceVitals.data[2] = 55 * (readADC1(12)	/4);	//12V
-			NFComBuf.ReadDeviceVitals.data[3] = 55 * (readADC1(10)	/4);	//5V
-			NFComBuf.ReadDeviceVitals.data[4] = 55 * (readADC1(15)	/4);	//PS1
-			NFComBuf.ReadDeviceVitals.data[5] = 55 * (readADC1(8)	/4);	//PS2
-			NFComBuf.ReadDeviceVitals.data[6] = 55 * (readADC1(6)	/4);	//Vchg
-			NFComBuf.ReadDeviceVitals.data[7] = 55 * (readADC1(0)	/4);	//Ichg
+
+			LED_Set(1<<0, //mask
+					1<<0,	//newState
+					0<<0);//blink
+			LCD_PrintVoltageInfo();
+			LED_Set(1<<0, //mask
+					0<<0,	//newState
+					0<<0);//blink
 		}		   
 		if(STDownCnt[ST_UsartCmdTo].tick){
 			modeSwitch(M_ER_STOP);

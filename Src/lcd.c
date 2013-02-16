@@ -1,8 +1,11 @@
 #include "lcd.h"
 #include "KS0108/KS0108.h"
+#include "adc.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+
+extern ADC_St ADC;
 
 void LCD_Config() {
 	GLCD_Initialize();
@@ -12,30 +15,32 @@ void LCD_Config() {
 		GLCD_WriteString("+--     HELLO     --+");
 		GLCD_GoTo(0, 7);
 		GLCD_WriteString("+-------------------+");
+		GLCD_GoTo(2*6, 7);
+		GLCD_WriteString(__DATE__);
 }
 
-void LCD_PrintChannelInfo(int channel) {
-//	vu16 milivolt = ADC.milivolt[channel];
-	char tempBuf[2];
-	char tempBuf2[6];
+void LCD_PrintVoltageInfo(int channel) {
+	char tempBuf[6];
 
-	// channel number
-	GLCD_GoTo((channel < 6) ? 6 : 12 * 6, channel % 6 + 1);
-	itoa(channel, tempBuf);
+	toVolt(ADC.milivolt[4], tempBuf);
+	GLCD_GoTo(1, 1);
+	GLCD_WriteString("Aku: ");
 	GLCD_WriteString(tempBuf);
 
-	// voltage
-	GLCD_GoTo((channel < 6) ? 3 * 6 : 15 * 6, channel % 6 + 1);
-//	toVolt(milivolt, tempBuf2);
-	GLCD_WriteString(tempBuf2);
+	toVolt(ADC.milivolt[2], tempBuf);
+	GLCD_GoTo(1, 2);
+	GLCD_WriteString("V24: ");
+	GLCD_WriteString(tempBuf);
 
-	// warning
-	GLCD_GoTo((channel < 6) ? 0 : 11 * 6, channel % 6 + 1);
-//	if (ADC.overTreshold[channel] == 1) {
-//		GLCD_WriteString("!");
-//	} else {
-//		GLCD_WriteString(" ");
-//	}
+	toVolt(ADC.milivolt[1], tempBuf);
+	GLCD_GoTo(1, 3);
+	GLCD_WriteString("V12: ");
+	GLCD_WriteString(tempBuf);
+
+	toVolt(ADC.milivolt[0], tempBuf);
+	GLCD_GoTo(1, 4);
+	GLCD_WriteString("V5:  ");
+	GLCD_WriteString(tempBuf);
 }
 
 /* reverse:  reverse string s in place */

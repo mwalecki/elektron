@@ -1,56 +1,20 @@
 #include "adc.h"
-#include "nf/nfv2.h"
+
+extern ADC_St ADC;
 
 #define ADC1_DR_Address    ((uint32_t)0x4001244C)
-	
-
-extern NF_STRUCT_ComBuf 	NFComBuf;
-
-void ADC_Config(void)
-{
-  ADC_InitTypeDef  ADC_InitStructure;
-  /* PCLK2 is the APB2 clock */
-  /* ADCCLK = PCLK2/6 = 72/6 = 12MHz*/
-  RCC_ADCCLKConfig(RCC_PCLK2_Div6);
-
-  /* Enable ADC1 clock so that we can talk to it */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
-  /* Put everything back to power-on defaults */
-  ADC_DeInit(ADC1);
-
-  /* ADC1 Configuration ------------------------------------------------------*/
-  /* ADC1 and ADC2 operate independantly */
-  ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
-  /* Disable the scan conversion so we do one at a time */
-  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  /* Don't do contimuous conversions - do them on demand */
-  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
-  /* Start conversin by software, not an external trigger */
-  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
-  /* Conversions are 12 bit - put them in the lower 12 bits of the result */
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  /* Say how many channels would be used by the sequencer */
-  ADC_InitStructure.ADC_NbrOfChannel = 1;
-
-  /* Now do the setup */
-  ADC_Init(ADC1, &ADC_InitStructure);
-  /* Enable ADC1 */
-  ADC_Cmd(ADC1, ENABLE);
-
-  /* Enable ADC1 reset calibaration register */
-  ADC_ResetCalibration(ADC1);
-  /* Check the end of ADC1 reset calibration register */
-  while(ADC_GetResetCalibrationStatus(ADC1));
-  /* Start ADC1 calibaration */
-  ADC_StartCalibration(ADC1);
-  /* Check the end of ADC1 calibration */
-  while(ADC_GetCalibrationStatus(ADC1));
-}
+#define ADC_DMA_TransferCompleteInterrupt
 
 void ADCwithDMA_Config(void){
 	ADC_InitTypeDef ADC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 	
+	ADC.uVoltsPerUnit = 13702; // 24060000 / 1756;
+	ADC.unitsOffset = 0;
+	//	ADC.logicZeroMax_mV = 0;
+	//	ADC.logicOneMin_mV = 1756;
+
 	//DMA 
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); 
 	
@@ -66,11 +30,11 @@ void ADCwithDMA_Config(void){
 	/* DMA1 channel1 configuration ----------------------------------------------*/
 	DMA_DeInit(DMA1_Channel1);
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (u32)&(NFComBuf.ReadAnalogInputs.data[0]);
+	DMA_InitStructure.DMA_MemoryBaseAddr = (u32)&(ADC.raw[0]);
 	// Data direction: Peripheral is source
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	// Data Buffer Size
-	DMA_InitStructure.DMA_BufferSize = 8;
+	DMA_InitStructure.DMA_BufferSize = ADC_Channels;
 	// Do not increment Peripheral Address Register
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	// Do increment destination memory pointer
@@ -83,9 +47,22 @@ void ADCwithDMA_Config(void){
 	// Memory to Memory Mode Disabled
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 	// Enable DMA Channel
-	DMA_Init(DMA1_Channel1, &DMA_InitStructure);  
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);      
+	#ifdef ADC_DMA_TransferCompleteInterrupt
+		/* Enable DMA1 Channel Transfer Complete interrupt */
+		DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
+	#endif //ADC_DMA_TransferCompleteInterrupt
 	/* Enable DMA1 channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
+
+	#ifdef ADC_DMA_TransferCompleteInterrupt	
+		/* Enable DMA1 channel1 IRQ Channel */
+		NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
+	#endif //ADC_DMA_TransferCompleteInterrupt
 	 
 	/* ADC1 configuration ------------------------------------------------------*/
 	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -94,10 +71,21 @@ void ADCwithDMA_Config(void){
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 	// number of ADC channels that will be converted using the sequencer
-	ADC_InitStructure.ADC_NbrOfChannel = 8;
+	ADC_InitStructure.ADC_NbrOfChannel = ADC_Channels;
 	ADC_Init(ADC1, &ADC_InitStructure);
 	/* ADC1 regular channels configuration */ 
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_71Cycles5);    
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_71Cycles5); //INP1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 2, ADC_SampleTime_71Cycles5); //INP2
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_13, 3, ADC_SampleTime_71Cycles5); //INP3
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 4, ADC_SampleTime_71Cycles5); //INP4
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 5, ADC_SampleTime_71Cycles5); //INP5
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 6, ADC_SampleTime_71Cycles5); //INP6
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 7, ADC_SampleTime_71Cycles5); //INP7
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 8, ADC_SampleTime_71Cycles5); //INP8
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 9, ADC_SampleTime_71Cycles5); //SEN12
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_15, 10, ADC_SampleTime_71Cycles5); //SEN5
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 11, ADC_SampleTime_71Cycles5); //ISEN1
+
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);
 	
@@ -118,13 +106,28 @@ void ADCwithDMA_Config(void){
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 }
 
-u16 readADC1(u8 channel)
+void DMA1_Channel1_IRQHandler(void)
 {
-  ADC_RegularChannelConfig(ADC1, channel, 1, ADC_SampleTime_1Cycles5);
-  // Start the conversion
-  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  // Wait until conversion completion
-  while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-  // Get the conversion value
-  return ADC_GetConversionValue(ADC1);
+	uint8_t i;
+	s16 raw;
+
+	for(i=0; i<ADC_Channels; i++){
+		raw = ADC.raw[i] - ADC.unitsOffset;
+		if(raw < 0)
+			raw = 0;
+
+		ADC.milivolt[i] = raw * ADC.uVoltsPerUnit / 1000;
+		//ADC.volt[i] = ADC.milivolt[i] / 1000;
+
+		/*
+		if(ADC.milivolt[i] <= ADC.logicZeroMax_mV)
+			ADC.digital[i/8] &= ~(1 << (i%8));
+		else if(ADC.milivolt[i] >= ADC.logicOneMin_mV)
+			ADC.digital[i/8] |= (1 << (i%8));
+		 */
+	}
+
+	DMA_ClearITPendingBit(DMA1_IT_TC1);
 }
+
+
