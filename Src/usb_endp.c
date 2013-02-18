@@ -33,6 +33,7 @@
 #include "hw_config.h"
 #include "usb_istr.h"
 #include "usb_pwr.h"
+#include "usb.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -115,7 +116,9 @@ void EP3_OUT_Callback(void)
   /* USB data will be immediately processed, this allow next USB traffic being 
   NAKed till the end of the USART Xfer */
   
-  USB_To_USART_Send_Data(USB_Rx_Buffer, USB_Rx_Cnt);
+  //USB_To_USART_Send_Data(USB_Rx_Buffer, USB_Rx_Cnt);
+  USB_CacheReceivedData(USB_Rx_Buffer, USB_Rx_Cnt);
+  USB_ProcessReceivedData();
   
 #ifndef STM32F10X_CL
   /* Enable the receive of data on EP3 */

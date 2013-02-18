@@ -18,7 +18,8 @@
 
 //##                                      #### ######## ################ GLOBALS   
 uint8_t				crcTable[256]; 
-USART_St			Usart1, Usart4, USBBufs;
+USART_St			Usart1, Usart4;
+USB_St				USBMySCPI, USBNF;
 LED_St				Led;
 ADC_St				ADC;
 STDOWNCNT_St		STDownCnt[ST_Downcounters];	

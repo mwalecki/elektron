@@ -1,14 +1,19 @@
-#include "usb.h"		  
+#include "usb.h"
+#include "circbuf.h"
+
+uint8_t cbUSBRxData[CB_USBRX_BUF_SIZE];
+CircularBuffer	cbUSBReceived;
+extern USB_St	USBMySCPI, USBNF;
 
 extern uint8_t USB_Rx_Buffer[VIRTUAL_COM_PORT_DATA_SIZE];
 extern uint16_t USB_Rx_Cnt;
-
-extern uint8_t  USART_Rx_Buffer [USART_RX_DATA_SIZE]; 
+extern  uint8_t USART_Rx_Buffer[];
 extern uint32_t USART_Rx_ptr_in;
-extern uint32_t USART_Rx_ptr_out;
-extern uint32_t USART_Rx_length;
 
-void USB_Config(void){					  
+void USB_Config(void){
+	// USB Received Data Circular Buffer Init
+	cbInit(&cbUSBReceived, cbUSBRxData, CB_USBRX_BUF_SIZE);
+
 #ifdef USB_CONNECT_PORT
 	GPIO_InitTypeDef GPIO_InitStructure;
 	// IO Clocks Enable
@@ -34,6 +39,28 @@ void USB_Config(void){
 	// Enable USBDP PullUp
 	USB_Cable_Config(ENABLE);
 #endif
+}
+
+void USB_CacheReceivedData(uint8_t* data_buffer, uint8_t Nb_bytes) {
+	uint16_t i;
+	for (i = 0; i < Nb_bytes; i++) {
+		cbWrite(&cbUSBReceived, &(data_buffer[i]));
+	}
+}
+
+void USB_ProcessReceivedData(void) {
+	uint8_t newByte;
+	while(cbIsEmpty(&cbUSBReceived) == 0){
+		cbRead(&cbUSBReceived, &newByte);
+		USBMySCPI.rxBuf[USBMySCPI.rxPt] = newByte;
+
+		if(MYSCPI_Interpreter(USBMySCPI.rxBuf, &USBMySCPI.rxPt, USBMySCPI.txBuf, &USBMySCPI.txCnt) > 0){
+			if(USBMySCPI.txCnt > 0){
+				USB_SendNBytes((uint8_t*)USBMySCPI.txBuf, USBMySCPI.txCnt);
+				USBMySCPI.txCnt = 0;
+			}
+		}
+	}
 }
 
 void USB_SendNBytes(uint8_t* buf, uint16_t cnt){
