@@ -46,7 +46,7 @@
 //	#define NF_BUFSZ_SetServosMisc			28
 //	#define NF_BUFSZ_ReadServosStatus		28
 											
-	#define NF_BUFSZ_SetDigitalOutputs		2
+	#define NF_BUFSZ_SetDigitalOutputs		4
 	#define NF_BUFSZ_ReadDigitalInputs		2
 	#define NF_BUFSZ_ReadAnalogInputs		8
 	

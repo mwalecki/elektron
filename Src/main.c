@@ -63,6 +63,7 @@ int main(void)
 			1<<0,	//newState
 			1<<0);//blink
 	
+	NFv2_CrcInit();
 	NFv2_Config(&NFComBuf, NF_MainModuleAddress);
 
 	
@@ -129,6 +130,7 @@ int main(void)
 					1<<0,	//newState
 					0<<0);//blink
 			LCD_PrintVoltageInfo();
+			LCD_OutputsMenuProcess();
 			LED_Set(1<<0, //mask
 					0<<0,	//newState
 					0<<0);//blink

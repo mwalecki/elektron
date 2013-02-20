@@ -4,18 +4,22 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "nf/nfv2.h"
+#include "usb.h"
 
 extern ADC_St ADC;
+extern NF_STRUCT_ComBuf 	NFComBuf;
+extern DEVICE_INFO *pInformation;
 
 void LCD_Config() {
 	GLCD_Initialize();
 	GLCD_ClearScreen();
 
 		GLCD_GoTo(0, 0);
-		GLCD_WriteString("+--     HELLO     --+");
+		GLCD_WriteString("+- ElektroSedes ----+");
 		GLCD_GoTo(0, 7);
-		GLCD_WriteString("+-------------------+");
-		GLCD_GoTo(2*6, 7);
+		GLCD_WriteString("+-              ----+");
+		GLCD_GoTo(3*6, 7);
 		GLCD_WriteString(__DATE__);
 }
 
@@ -23,24 +27,81 @@ void LCD_PrintVoltageInfo(int channel) {
 	char tempBuf[6];
 
 	toVolt(ADC.milivolt[4], tempBuf);
-	GLCD_GoTo(1, 1);
+	GLCD_GoTo(0, 1);
 	GLCD_WriteString("Aku: ");
 	GLCD_WriteString(tempBuf);
 
 	toVolt(ADC.milivolt[2], tempBuf);
-	GLCD_GoTo(1, 2);
+	GLCD_GoTo(0, 2);
 	GLCD_WriteString("V24: ");
-	GLCD_WriteString(tempBuf);
+	GLCD_WriteStringNegative(tempBuf);
 
 	toVolt(ADC.milivolt[1], tempBuf);
-	GLCD_GoTo(1, 3);
+	GLCD_GoTo(0, 3);
 	GLCD_WriteString("V12: ");
 	GLCD_WriteString(tempBuf);
 
 	toVolt(ADC.milivolt[0], tempBuf);
-	GLCD_GoTo(1, 4);
+	GLCD_GoTo(0, 4);
 	GLCD_WriteString("V5:  ");
 	GLCD_WriteString(tempBuf);
+}
+
+void LCD_OutputsMenuProcess(void) {
+	
+	char tempBuf[10];
+	static uint8_t cursPos=0, oldCursPos=0,  firstRun=1;
+
+	GLCD_GoTo(0*6, 6);
+	itoa(pInformation->ControlState, tempBuf);
+	GLCD_WriteString(tempBuf);
+	GLCD_GoTo(4*6, 6);
+	itoa(pInformation->Current_Configuration, tempBuf);
+	GLCD_WriteString(tempBuf);
+	
+
+	GLCD_GoTo(16*6, 1);
+	(NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) ?
+			GLCD_WriteStringNegative("Z.0") : GLCD_WriteString("Z.0");
+	GLCD_GoTo(16*6, 2);
+	(NFComBuf.SetDigitalOutputs.data[0] & (1<<1)) ?
+			GLCD_WriteStringNegative("Z.1") : GLCD_WriteString("Z.1");
+	GLCD_GoTo(16*6, 3);
+	(NFComBuf.SetDigitalOutputs.data[0] & (1<<2)) ?
+			GLCD_WriteStringNegative("Z.2") : GLCD_WriteString("Z.2");
+	GLCD_GoTo(16*6, 4);
+	(NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) ?
+			GLCD_WriteStringNegative("Z.3") : GLCD_WriteString("Z.3");
+	GLCD_GoTo(16*6, 5);
+	(NFComBuf.SetDrivesMode.data[0] && NFComBuf.SetDrivesMode.data[1]) ?
+			GLCD_WriteStringNegative("Moc") : GLCD_WriteString("Moc");
+	
+	if(firstRun)
+		firstRun = 0;
+	else if(cursPos == oldCursPos)
+		return;
+	
+	cursPos = oldCursPos;
+	
+	GLCD_GoTo(20*6, 1);
+	(cursPos == 0) ? 
+			GLCD_WriteStringNegative(" ") : GLCD_WriteString(" ");
+
+	GLCD_GoTo(20*6, 2);
+	(cursPos == 1) ? 
+			GLCD_WriteStringNegative(" ") : GLCD_WriteString(" ");
+
+	GLCD_GoTo(20*6, 3);
+	(cursPos == 2) ? 
+			GLCD_WriteStringNegative(" ") : GLCD_WriteString(" ");
+
+	GLCD_GoTo(20*6, 4);
+	(cursPos == 3) ? 
+			GLCD_WriteStringNegative(" ") : GLCD_WriteString(" ");
+
+	GLCD_GoTo(20*6, 5);
+	(cursPos == 4) ? 
+			GLCD_WriteStringNegative(" ") : GLCD_WriteString(" ");
 }
 
 /* reverse:  reverse string s in place */

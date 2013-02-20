@@ -1,9 +1,13 @@
 #include "usb.h"
 #include "circbuf.h"
+#include "myscpi/myscpi.h"
+#include "nf/nfv2.h"
 
 uint8_t cbUSBRxData[CB_USBRX_BUF_SIZE];
 CircularBuffer	cbUSBReceived;
 extern USB_St	USBMySCPI, USBNF;
+extern NF_STRUCT_ComBuf 	NFComBuf;
+
 
 extern uint8_t USB_Rx_Buffer[VIRTUAL_COM_PORT_DATA_SIZE];
 extern uint16_t USB_Rx_Cnt;
@@ -50,14 +54,26 @@ void USB_CacheReceivedData(uint8_t* data_buffer, uint8_t Nb_bytes) {
 
 void USB_ProcessReceivedData(void) {
 	uint8_t newByte;
+	uint8_t commArray[15], commCnt;
 	while(cbIsEmpty(&cbUSBReceived) == 0){
 		cbRead(&cbUSBReceived, &newByte);
-		USBMySCPI.rxBuf[USBMySCPI.rxPt] = newByte;
 
+		// MySCPI
+		USBMySCPI.rxBuf[USBMySCPI.rxPt] = newByte;
 		if(MYSCPI_Interpreter(USBMySCPI.rxBuf, &USBMySCPI.rxPt, USBMySCPI.txBuf, &USBMySCPI.txCnt) > 0){
 			if(USBMySCPI.txCnt > 0){
 				USB_SendNBytes((uint8_t*)USBMySCPI.txBuf, USBMySCPI.txCnt);
 				USBMySCPI.txCnt = 0;
+			}
+		}
+
+		// NF
+		USBNF.rxBuf[USBNF.rxPt] = newByte;
+		if(NF_Interpreter(&NFComBuf, (uint8_t*)USBNF.rxBuf, (uint8_t*)&USBNF.rxPt, commArray, &commCnt) > 0){
+			NFComBuf.dataReceived = 1;
+			if(commCnt > 0){
+				USBNF.txCnt = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)USBNF.txBuf, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
+				USB_SendNBytes((uint8_t*)USBNF.txBuf, USBNF.txCnt);
 			}
 		}
 	}
