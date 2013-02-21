@@ -7,6 +7,7 @@
 
 extern uint16_t 	serialNumber;
 extern NF_STRUCT_ComBuf 	NFComBuf;
+extern uint8_t MotorControllerAddr0, MotorControllerAddr1, InputOutputAddr0;
 
 uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, volatile uint8_t *txBuf, volatile uint8_t *txCnt)
 {
@@ -47,224 +48,16 @@ uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, vola
 	//	\/	\/	\/	\/	\/	\/	\/
 
 	_IF_MEMBER_THEN("*IDN?")
-	//	_PRINT_RESPONSE("%s, %s %s \r\n", MODULE_NAME, __DATE__, __TIME__);
 	_PRINT_STR_RESPONSE(MODULE_NAME)
-/*
-	else
-	_IF_MEMBER_THEN(":SRN1!")
-		EEPROM_Write(EEADDR_SRV0MIN, (u16) Servo.min[0]);
-	else
-	_IF_MEMBER_THEN(":SRN2!")
-		EEPROM_Write(EEADDR_SRV1MIN, (u16) Servo.min[1]);
-	else
-	_IF_MEMBER_THEN(":SRN3!")
-		EEPROM_Write(EEADDR_SRV2MIN, (u16) Servo.min[2]);
-	else
-	_IF_MEMBER_THEN(":SRN4!")
-		EEPROM_Write(EEADDR_SRV3MIN, (u16) Servo.min[3]);
-	else
-	_IF_MEMBER_THEN(":SRN5!")
-		EEPROM_Write(EEADDR_SRV4MIN, (u16) Servo.min[4]);
-	else
-	_IF_MEMBER_THEN(":SRN6!")
-		EEPROM_Write(EEADDR_SRV5MIN, (u16) Servo.min[5]);
-	else
-	_IF_MEMBER_THEN(":SRN7!")
-		EEPROM_Write(EEADDR_SRV6MIN, (u16) Servo.min[6]);
-	else
-	_IF_MEMBER_THEN(":SRN8!")
-		EEPROM_Write(EEADDR_SRV7MIN, (u16) Servo.min[7]);
-		
-	else
-	_IF_MEMBER_THEN(":SRM1!")
-		EEPROM_Write(EEADDR_SRV0MAX, (u16) Servo.max[0]);
-	else
-	_IF_MEMBER_THEN(":SRM2!")
-		EEPROM_Write(EEADDR_SRV1MAX, (u16) Servo.max[1]);
-	else
-	_IF_MEMBER_THEN(":SRM3!")
-		EEPROM_Write(EEADDR_SRV2MAX, (u16) Servo.max[2]);
-	else
-	_IF_MEMBER_THEN(":SRM4!")
-		EEPROM_Write(EEADDR_SRV3MAX, (u16) Servo.max[3]);
-	else
-	_IF_MEMBER_THEN(":SRM5!")
-		EEPROM_Write(EEADDR_SRV4MAX, (u16) Servo.max[4]);
-	else
-	_IF_MEMBER_THEN(":SRM6!")
-		EEPROM_Write(EEADDR_SRV5MAX, (u16) Servo.max[5]);
-	else
-	_IF_MEMBER_THEN(":SRM7!")
-		EEPROM_Write(EEADDR_SRV6MAX, (u16) Servo.max[6]);
-	else
-	_IF_MEMBER_THEN(":SRM8!")
-		EEPROM_Write(EEADDR_SRV7MAX, (u16) Servo.max[7]);
-		
-	else
-	_IF_MEMBER_THEN(":CNF1!")
-		EEPROM_Write(EEADDR_SRV0ADJ, (u16) Servo.adj[0]);
-	else
-	_IF_MEMBER_THEN(":CNF2!")
-		EEPROM_Write(EEADDR_SRV1ADJ, (u16) Servo.adj[1]);
-	else
-	_IF_MEMBER_THEN(":CNF3!")
-		EEPROM_Write(EEADDR_SRV2ADJ, (u16) Servo.adj[2]);
-	else
-	_IF_MEMBER_THEN(":CNF4!")
-		EEPROM_Write(EEADDR_SRV3ADJ, (u16) Servo.adj[3]);
-	else
-	_IF_MEMBER_THEN(":CNF5!")
-		EEPROM_Write(EEADDR_SRV4ADJ, (u16) Servo.adj[4]);
-	else
-	_IF_MEMBER_THEN(":CNF6!")
-		EEPROM_Write(EEADDR_SRV5ADJ, (u16) Servo.adj[5]);
-	else
-	_IF_MEMBER_THEN(":CNF7!")
-		EEPROM_Write(EEADDR_SRV6ADJ, (u16) Servo.adj[6]);
-	else
-	_IF_MEMBER_THEN(":CNF8!")
-		EEPROM_Write(EEADDR_SRV7ADJ, (u16) Servo.adj[7]);
 
 	else
-	_GET_SET_MEMBER(Servo.target[0], ":SRV1")
-	else
-	_GET_SET_MEMBER(Servo.target[1], ":SRV2")
-	else
-	_GET_SET_MEMBER(Servo.target[2], ":SRV3")
-	else
-	_GET_SET_MEMBER(Servo.target[3], ":SRV4")
-	else
-	_GET_SET_MEMBER(Servo.target[4], ":SRV5")
-	else
-	_GET_SET_MEMBER(Servo.target[4], ":SRV6") // SRV5 i SRV6 nastawiane razem
-	else
-	_GET_SET_MEMBER(Servo.target[6], ":SRV7")
-	else							
-	_GET_SET_MEMBER(Servo.target[6], ":SRV8") // SRV7 i SRV8 nastawiane razem
-	
-	else
-	_GET_SET_MEMBER(Servo.min[0], ":SRN1")
-	else
-	_GET_SET_MEMBER(Servo.min[1], ":SRN2")
-	else
-	_GET_SET_MEMBER(Servo.min[2], ":SRN3")
-	else
-	_GET_SET_MEMBER(Servo.min[3], ":SRN4")
-	else
-	_GET_SET_MEMBER(Servo.min[4], ":SRN5")
-	else
-	_GET_SET_MEMBER(Servo.min[5], ":SRN6")
-	else
-	_GET_SET_MEMBER(Servo.min[6], ":SRN7")
-	else							
-	_GET_SET_MEMBER(Servo.min[7], ":SRN8")
-	
-	else
-	_GET_SET_MEMBER(Servo.max[0], ":SRM1")
-	else
-	_GET_SET_MEMBER(Servo.max[1], ":SRM2")
-	else
-	_GET_SET_MEMBER(Servo.max[2], ":SRM3")
-	else
-	_GET_SET_MEMBER(Servo.max[3], ":SRM4")
-	else
-	_GET_SET_MEMBER(Servo.max[4], ":SRM5")
-	else
-	_GET_SET_MEMBER(Servo.max[5], ":SRM6")
-	else
-	_GET_SET_MEMBER(Servo.max[6], ":SRM7")
-	else							
-	_GET_SET_MEMBER(Servo.max[7], ":SRM8")
-	
-	else
-	_GET_SET_MEMBER(Servo.adj[0], ":CNF1")
-	else
-	_GET_SET_MEMBER(Servo.adj[1], ":CNF2")
-	else
-	_GET_SET_MEMBER(Servo.adj[2], ":CNF3")
-	else
-	_GET_SET_MEMBER(Servo.adj[3], ":CNF4")
-	else
-	_GET_SET_MEMBER(Servo.adj[4], ":CNF5")
-	else
-	_GET_SET_MEMBER(Servo.adj[5], ":CNF6")
-	else
-	_GET_SET_MEMBER(Servo.adj[6], ":CNF7")
-	else
-	_GET_SET_MEMBER(Servo.adj[7], ":CNF8") 
-	
-	else
-	_IF_MEMBER_THEN(":DOUT"){
-		OUT_Set((rxBuf[6]=='1')<<7
-				| (rxBuf[7]=='1')<<6
-				| (rxBuf[8]=='1')<<5
-				| (rxBuf[9]=='1')<<4
-				| (rxBuf[10]=='1')<<3
-				| (rxBuf[11]=='1')<<2
-				| (rxBuf[12]=='1')<<1
-				| (rxBuf[13]=='1')<<0);
-	}
-	
-	else
-	_IF_MEMBER_THEN(":DIN?")
-		_PRINT_RESPONSE("%s\r\n", u8_to_binary(NFComBuf.ReadDigitalInputs.data[0], 7))
-		
-	else
-	_IF_MEMBER_THEN(":AIN0?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[0])
-	else
-	_IF_MEMBER_THEN(":AIN1?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[1])
-	else
-	_IF_MEMBER_THEN(":AIN2?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[2])
-	else
-	_IF_MEMBER_THEN(":AIN3?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[3])
-	else
-	_IF_MEMBER_THEN(":AIN4?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[4])
-	else
-	_IF_MEMBER_THEN(":AIN5?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[5])
-	else
-	_IF_MEMBER_THEN(":AIN6?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[6])
-	else
-	_IF_MEMBER_THEN(":AIN7?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[7])
-	else
-	_IF_MEMBER_THEN(":AIN8?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[8])
-	else
-	_IF_MEMBER_THEN(":AIN9?")
-		_PRINT_RESPONSE("%d\r\n", NFComBuf.ReadAnalogInputs.data[9])
-
-	else
-	_GROUP(":MOT1") 
-		_GET_SET_MEMBER(NFComBuf.SetDrivesSpeed.data[0], "")
-		MOTOR1_SetInput(NFComBuf.SetDrivesSpeed.data[0]);
+	_GROUP(":ADDR")
+		_GET_SET_MEMBER(MotorControllerAddr0, "MC0")
+		else
+		_GET_SET_MEMBER(MotorControllerAddr1, "MC1")
+		else
+		_GET_SET_MEMBER(InputOutputAddr0, "IO0")
 	_ENDGROUP
-
-	else
-	_GROUP(":MOT2") 
-		_GET_SET_MEMBER(NFComBuf.SetDrivesSpeed.data[1], "")
-		MOTOR2_SetInput(NFComBuf.SetDrivesSpeed.data[1]);
-	_ENDGROUP
-	
-	else
-	_IF_MEMBER_THEN(":ENC1?")
-		_PRINT_RESPONSE("%d\r\n", ENC1_ReadIncrement())		
-
-	else
-	_IF_MEMBER_THEN(":ENC2?")
-		_PRINT_RESPONSE("%d\r\n", ENC2_ReadIncrement())		
-										 
-	else
-	_IF_MEMBER_THEN(":SER!")
-		EEPROM_Write(EEADDR_SERIAL, (u16) serialNumber);
-	else							
-	_GET_SET_MEMBER(serialNumber, ":SER")
 
 	else
 	_GROUP(":MEM") 
@@ -307,15 +100,6 @@ uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, vola
 			}
 	_ENDGROUP
 
-	else
-	_GROUP(":DYNA") 
-		_IF_MEMBER_THEN(":LED ON"){
-		}
-		else  
-		_IF_MEMBER_THEN(":LED OFF"){
-		}
-	_ENDGROUP
-	*/
 	//	/\	/\	/\	/\	/\	/\	/\
 	//	||	||	||	||	||	||	||
 	// Here you build your own command parser
@@ -331,3 +115,41 @@ uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, vola
 	return ret;
 }
 
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+ * Modified to return string length
+ */
+int my_itoa(int value, char* result, int base) {
+	int len = 0;
+	// check that the base if valid
+	if (base < 2 || base > 36) {
+		*result = '\0';
+		return 0;
+	}
+
+	char* ptr = result, *ptr1 = result, tmp_char;
+	int tmp_value;
+
+	do {
+		tmp_value = value;
+		value /= base;
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+	} while ( value );
+
+	// Apply negative sign
+	if (tmp_value < 0)
+		*ptr++ = '-';
+	*(ptr) = '\0';
+	ptr--;
+	// calculate string length
+	len = ptr +1 - result;
+
+	while(ptr1 < ptr) {
+		tmp_char = *ptr;
+		*ptr--= *ptr1;
+		*ptr1++ = tmp_char;
+	}
+	return len;
+}

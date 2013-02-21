@@ -1,49 +1,56 @@
 #include "lcd.h"
 #include "KS0108/KS0108.h"
-#include "adc.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
 #include "nf/nfv2.h"
 #include "usb.h"
 
-extern ADC_St ADC;
 extern NF_STRUCT_ComBuf 	NFComBuf;
-extern DEVICE_INFO *pInformation;
 
 void LCD_Config() {
 	GLCD_Initialize();
 	GLCD_ClearScreen();
 
-		GLCD_GoTo(0, 0);
-		GLCD_WriteString("+- ElektroSedes ----+");
-		GLCD_GoTo(0, 7);
-		GLCD_WriteString("+-              ----+");
-		GLCD_GoTo(3*6, 7);
-		GLCD_WriteString(__DATE__);
+	GLCD_GoTo(0, 0);GLCD_WriteString("Power[V]  usb     o0 ");
+	GLCD_GoTo(0, 1);GLCD_WriteString("Aku --.-  link    o1 ");
+	GLCD_GoTo(0, 2);GLCD_WriteString("V12 --.-          o2 ");
+	GLCD_GoTo(0, 3);GLCD_WriteString("V5  --.-          o3 ");
+	GLCD_GoTo(0, 4);GLCD_WriteString("                     ");
+	GLCD_GoTo(0, 5);GLCD_WriteString("M1 --.-V --C ---     ");
+	GLCD_GoTo(0, 6);GLCD_WriteString("M2 --.-V --C ---     ");
+	GLCD_GoTo(0, 7);GLCD_WriteString("---------------------");
+	GLCD_GoTo(10*6, 7);
+	GLCD_WriteString(__DATE__);
 }
 
-void LCD_PrintVoltageInfo(int channel) {
+void LCD_PrintAnalogs(int channel) {
 	char tempBuf[6];
 
-	toVolt(ADC.milivolt[4], tempBuf);
-	GLCD_GoTo(0, 1);
-	GLCD_WriteString("Aku: ");
+	toVolt(NFComBuf.ReadDeviceVitals.data[0], tempBuf);
+	GLCD_GoTo(LCD_XY_VBATT);
 	GLCD_WriteString(tempBuf);
 
-	toVolt(ADC.milivolt[2], tempBuf);
-	GLCD_GoTo(0, 2);
-	GLCD_WriteString("V24: ");
-	GLCD_WriteStringNegative(tempBuf);
+//	toVolt(ADC.milivolt[2], tempBuf);
+//	GLCD_GoTo(LCD_XY_V24);
+//	GLCD_WriteStringNegative(tempBuf);
 
-	toVolt(ADC.milivolt[1], tempBuf);
-	GLCD_GoTo(0, 3);
-	GLCD_WriteString("V12: ");
+	toVolt(NFComBuf.ReadDeviceVitals.data[2], tempBuf);
+	GLCD_GoTo(LCD_XY_V12);
 	GLCD_WriteString(tempBuf);
 
-	toVolt(ADC.milivolt[0], tempBuf);
-	GLCD_GoTo(0, 4);
-	GLCD_WriteString("V5:  ");
+	toVolt(NFComBuf.ReadDeviceVitals.data[3], tempBuf);
+	GLCD_GoTo(LCD_XY_V5);
+	GLCD_WriteString(tempBuf);
+
+	//itoa(NFComBuf.ReadDeviceVitals.data[4]/1000, tempBuf);
+	toVolt(NFComBuf.ReadDeviceVitals.data[4], tempBuf);
+	GLCD_GoTo(LCD_XY_VM1);
+	GLCD_WriteString(tempBuf);
+
+	//itoa(NFComBuf.ReadDeviceVitals.data[5]/1000, tempBuf);
+	toVolt(NFComBuf.ReadDeviceVitals.data[5], tempBuf);
+	GLCD_GoTo(LCD_XY_VM2);
 	GLCD_WriteString(tempBuf);
 }
 
@@ -52,29 +59,32 @@ void LCD_OutputsMenuProcess(void) {
 	char tempBuf[10];
 	static uint8_t cursPos=0, oldCursPos=0,  firstRun=1;
 
-	GLCD_GoTo(0*6, 6);
-	itoa(pInformation->ControlState, tempBuf);
-	GLCD_WriteString(tempBuf);
-	GLCD_GoTo(4*6, 6);
-	itoa(pInformation->Current_Configuration, tempBuf);
-	GLCD_WriteString(tempBuf);
-	
+	GLCD_GoTo(LCD_XY_USB);
+	USB_IsConfigured() ?
+			GLCD_WriteStringNegative("usb") : GLCD_WriteString("usb");
 
-	GLCD_GoTo(16*6, 1);
+	GLCD_GoTo(LCD_XY_O0);
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) ?
-			GLCD_WriteStringNegative("Z.0") : GLCD_WriteString("Z.0");
-	GLCD_GoTo(16*6, 2);
+			GLCD_WriteStringNegative("o0") : GLCD_WriteString("o0");
+	GLCD_GoTo(LCD_XY_O1);
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<1)) ?
-			GLCD_WriteStringNegative("Z.1") : GLCD_WriteString("Z.1");
-	GLCD_GoTo(16*6, 3);
+			GLCD_WriteStringNegative("o1") : GLCD_WriteString("o1");
+	GLCD_GoTo(LCD_XY_O2);
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<2)) ?
-			GLCD_WriteStringNegative("Z.2") : GLCD_WriteString("Z.2");
-	GLCD_GoTo(16*6, 4);
+			GLCD_WriteStringNegative("o2") : GLCD_WriteString("o2");
+	GLCD_GoTo(LCD_XY_O3);
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) ?
-			GLCD_WriteStringNegative("Z.3") : GLCD_WriteString("Z.3");
-	GLCD_GoTo(16*6, 5);
-	(NFComBuf.SetDrivesMode.data[0] && NFComBuf.SetDrivesMode.data[1]) ?
-			GLCD_WriteStringNegative("Moc") : GLCD_WriteString("Moc");
+			GLCD_WriteStringNegative("o3") : GLCD_WriteString("o3");
+
+
+
+
+	GLCD_GoTo(LCD_XY_SM1);
+	(NFComBuf.SetDrivesMode.data[0]) ?
+			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
+	GLCD_GoTo(LCD_XY_SM2);
+	(NFComBuf.SetDrivesMode.data[1]) ?
+			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
 	
 	if(firstRun)
 		firstRun = 0;
@@ -156,6 +166,5 @@ void toVolt(int milivolt, char s[]) {
 		s[2] = '.';
 		s[3] = '0';
 	}
-	s[4] = 'V';
-	s[5] = '\0';
+	s[4] = '\0';
 }

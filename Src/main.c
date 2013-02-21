@@ -16,8 +16,7 @@
 
 #include "usb.h"
 
-//##                                      #### ######## ################ GLOBALS   
-uint8_t				crcTable[256]; 
+//##                                      #### ######## ################ GLOBALS
 USART_St			Usart1, Usart4;
 USB_St				USBMySCPI, USBNF;
 LED_St				Led;
@@ -129,7 +128,7 @@ int main(void)
 			LED_Set(1<<0, //mask
 					1<<0,	//newState
 					0<<0);//blink
-			LCD_PrintVoltageInfo();
+			LCD_PrintAnalogs();
 			LCD_OutputsMenuProcess();
 			LED_Set(1<<0, //mask
 					0<<0,	//newState

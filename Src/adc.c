@@ -1,6 +1,8 @@
 #include "adc.h"
+#include "nf/nfv2.h"
 
 extern ADC_St ADC;
+extern NF_STRUCT_ComBuf 	NFComBuf;
 
 #define ADC1_DR_Address    ((uint32_t)0x4001244C)
 #define ADC_DMA_TransferCompleteInterrupt
@@ -126,6 +128,13 @@ void DMA1_Channel1_IRQHandler(void)
 			ADC.digital[i/8] |= (1 << (i%8));
 		 */
 	}
+
+	NFComBuf.ReadDeviceVitals.data[0] = ADC.milivolt[4];
+	NFComBuf.ReadDeviceVitals.data[1] = ADC.milivolt[2];
+	NFComBuf.ReadDeviceVitals.data[2] = ADC.milivolt[1];
+	NFComBuf.ReadDeviceVitals.data[3] = ADC.milivolt[0];
+	NFComBuf.ReadDeviceVitals.data[4] = ADC.milivolt[9];
+	NFComBuf.ReadDeviceVitals.data[5] = ADC.milivolt[10];
 
 	DMA_ClearITPendingBit(DMA1_IT_TC1);
 }

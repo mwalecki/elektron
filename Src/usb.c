@@ -7,12 +7,17 @@ uint8_t cbUSBRxData[CB_USBRX_BUF_SIZE];
 CircularBuffer	cbUSBReceived;
 extern USB_St	USBMySCPI, USBNF;
 extern NF_STRUCT_ComBuf 	NFComBuf;
+extern DEVICE_INFO *pInformation;
 
 
 extern uint8_t USB_Rx_Buffer[VIRTUAL_COM_PORT_DATA_SIZE];
 extern uint16_t USB_Rx_Cnt;
 extern  uint8_t USART_Rx_Buffer[];
 extern uint32_t USART_Rx_ptr_in;
+
+uint8_t USB_IsConfigured(void){
+	  return ((pInformation->Current_Configuration != 0) && GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_9));
+}
 
 void USB_Config(void){
 	// USB Received Data Circular Buffer Init
