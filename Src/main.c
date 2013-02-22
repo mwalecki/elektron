@@ -5,7 +5,7 @@
 #include "clock.h"		
 #include "interrupts.h"
 #include "led.h"
-#include "lcd.h"
+#include "ui.h"
 #include "systick.h"
 #include "usart1.h"
 #include "usart4.h"
@@ -47,7 +47,7 @@ int main(void)
 	NVIC_Configuration();	// NVIC_Configuration
 	SYSTICK_Init(STDownCnt);
 	LED_Config();
-	LCD_Config();
+	UI_Config();
 	OUT_Config();
 	ADCwithDMA_Config();
 	USART1_Config();
@@ -128,8 +128,7 @@ int main(void)
 			LED_Set(1<<0, //mask
 					1<<0,	//newState
 					0<<0);//blink
-			LCD_PrintAnalogs();
-			LCD_OutputsMenuProcess();
+			UI_LcdPrintAnalogs();
 			LED_Set(1<<0, //mask
 					0<<0,	//newState
 					0<<0);//blink
@@ -143,6 +142,12 @@ int main(void)
 		if(STDownCnt[ST_RelaysOff].tick){
 			PS_ON_L();
 			STDownCnt[ST_RelaysOff].tick = 0;
+		}
+		if(STDownCnt[ST_UiProc].tick){
+			UI_SpeakerProc();
+			UI_KeyboardProc();
+			UI_LcdPrintBinaries();
+			STDownCnt[ST_UiProc].tick = 0;
 		}
 	}
 }

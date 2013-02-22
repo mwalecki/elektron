@@ -4,6 +4,7 @@
 #include "io.h"
 #include "adc.h"
 #include "nf/nfv2.h"
+#include "eebackup.h"
 
 extern uint16_t 	serialNumber;
 extern NF_STRUCT_ComBuf 	NFComBuf;

@@ -5,8 +5,8 @@
 
 #define ST_StatusLed	0
 #define ST_Period0			5000 // all values in [100us]
-#define ST_MotorsPid	1
-#define ST_Period1			10
+#define ST_UiProc		1
+#define ST_Period1			100
 #define ST_EncSpeed		2
 #define ST_Period2			100
 #define ST_UsartCmdTo	3

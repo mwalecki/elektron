@@ -29,10 +29,10 @@ typedef struct{
 } STDOWNCNT_St;	
 
 typedef struct{
-	vu8 rxBuf[USART_BufSz];
-	vu8 txBuf[USART_BufSz];
-	vu8 tmpBuf[USART_BufSz];
-	vu8 rxPt, txPt, txCnt;
+	u8 rxBuf[USART_BufSz];
+	u8 txBuf[USART_BufSz];
+	u8 tmpBuf[USART_BufSz];
+	u8 rxPt, txPt, txCnt;
 	volatile uint8_t rxDataReady	:1;
 	volatile uint8_t txDataReady	:1;
 } USART_St;	

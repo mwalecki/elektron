@@ -24,10 +24,12 @@ typedef struct{
 } USB_St;
 
 
-void USB_Config(void);			  
+void USB_Config(void);
+uint8_t USB_IsConfigured(void);
 void USB_SendNBytes(uint8_t* buf, uint16_t cnt);
 uint8_t USB_ReadOneByte(void);
 uint8_t USB_RxBufNotEmpty(void);
 void USB_CacheReceivedData(uint8_t* data_buffer, uint8_t Nb_bytes);
+void USB_ProcessReceivedData(void);
 
 #endif //MYUSB_H
