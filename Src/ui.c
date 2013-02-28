@@ -5,6 +5,7 @@
 #include "string.h"
 #include "nf/nfv2.h"
 #include "usb.h"
+#include "io.h"
 
 extern NF_STRUCT_ComBuf 	NFComBuf;
 
@@ -167,6 +168,14 @@ void UI_KeyboardProc(void)
 		ui.keyHold[KEY_Right] = 2;
 	}
 
+	if(ui.keyPressed[KEY_Off])
+		ui.keyCnt[KEY_Off]++;
+	else
+	{
+		ui.keyCnt[KEY_Off] = 0;
+		ui.keyHold[KEY_Off] = 2;
+	}
+
 	for(i = 0; i < KEYS_N; i++)
 	{
 		if((ui.keyHold[i]==0) && ui.keyCnt[i]>=10)
@@ -185,7 +194,7 @@ void UI_KeyboardProc(void)
 					ui.cursorY = UI_CURSOR_YMAX;
 				if(ui.keyHold[KEY_Up] > 0)
 					ui.keyHold[KEY_Up] --;
-				UI_SpeakerPlay(LS_noteE4, 10);
+				UI_SND_KEY_UP;
 				break;
 			case KEY_Down:
 				if(ui.cursorY < UI_CURSOR_YMAX)
@@ -194,7 +203,7 @@ void UI_KeyboardProc(void)
 					ui.cursorY = 0;
 				if(ui.keyHold[KEY_Down] > 0)
 					ui.keyHold[KEY_Down] --;
-				UI_SpeakerPlay(LS_noteE4, 10);
+				UI_SND_KEY_DOWN;
 				break;
 			case KEY_Left:
 				if(ui.keyHold[KEY_Left]!=0)
@@ -205,7 +214,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<0);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteC4, 10);
+							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 1:
@@ -213,7 +222,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<1);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteC4, 10);
+							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 2:
@@ -221,7 +230,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<2);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteC4, 10);
+							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 3:
@@ -229,7 +238,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<3);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteC4, 10);
+							UI_SND_DEACTIVATE;
 						}
 						break;
 					}
@@ -245,7 +254,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] |= (1<<0);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteG4, 10);
+							UI_SND_ACTIVATE;
 						}
 						break;
 					case 1:
@@ -253,7 +262,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] |= (1<<1);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteG4, 10);
+							UI_SND_ACTIVATE;
 						}
 						break;
 					case 2:
@@ -261,7 +270,7 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] |= (1<<2);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteG4, 10);
+							UI_SND_ACTIVATE;
 						}
 						break;
 					case 3:
@@ -269,12 +278,15 @@ void UI_KeyboardProc(void)
 							NFComBuf.SetDigitalOutputs.data[0] |= (1<<3);
 							NFComBuf.SetDigitalOutputs.updated = 1;
 							NFComBuf.dataReceived = 1;
-							UI_SpeakerPlay(LS_noteG4, 10);
+							UI_SND_ACTIVATE;
 						}
 						break;
 					}
 					ui.keyHold[KEY_Right] = 0;
 				}
+				break;
+			case KEY_Off:
+				UI_SND_POWER_OFF;
 				break;
 			}
 		}
@@ -323,30 +335,7 @@ void UI_SpeakerConfig(void){
 	/* TIM3 enable counter */
 	TIM_Cmd(TIM3, ENABLE);
 
-	/*UI_SpeakerPlay(LS_noteC4, 20);
-	UI_SpeakerPlay(LS_noteE4, 20);
-	UI_SpeakerPlay(LS_noteG4, 20);
-	UI_SpeakerPlay(LS_noteC4, 20);
-	UI_SpeakerPlay(LS_noteE4, 20);
-	UI_SpeakerPlay(LS_noteG4, 20);*/
-
-	UI_SpeakerPlay(LS_noteG4, 20);
-	UI_SpeakerPlay(LS_noteH4, 20);
-	UI_SpeakerPlay(LS_noteD5, 20);
-	UI_SpeakerPlay(LS_noteG5, 20);
-	UI_SpeakerPlay(LS_noteH5, 20);
-
-	UI_SpeakerPlay(LS_noteG4x, 20);
-	UI_SpeakerPlay(LS_noteC5, 20);
-	UI_SpeakerPlay(LS_noteD5x, 20);
-	UI_SpeakerPlay(LS_noteG5x, 20);
-	UI_SpeakerPlay(LS_noteC6, 20);
-
-	UI_SpeakerPlay(LS_noteA4x, 20);
-	UI_SpeakerPlay(LS_noteD5, 20);
-	UI_SpeakerPlay(LS_noteF5, 20);
-	UI_SpeakerPlay(LS_noteA5x, 20);
-	UI_SpeakerPlay(LS_noteD6, 20);
+	UI_SND_POWER_UP;
 }
 
 void UI_SpeakerPlay(uint32_t hertz, uint16_t milisec){
@@ -363,9 +352,15 @@ void UI_SpeakerProc(){
 
 	if(timeLeft == 0){
 		if(ui.lsSndCnt > 0){
-			LS_PERIOD = (uint16_t)(1000000 / ui.lsSound[0]);
-			LS_DUTY = (uint16_t)((1000000 / ui.lsSound[0])/2);
-			TIM_GenerateEvent(TIM3, TIM_EventSource_Update);
+			if(ui.lsSound[0] > 0){
+				LS_PERIOD = (uint16_t)(1000000 / ui.lsSound[0]);
+				LS_DUTY = (uint16_t)((1000000 / ui.lsSound[0])/2);
+				TIM_GenerateEvent(TIM3, TIM_EventSource_Update);
+			}
+			else{
+				LS_PERIOD = 0;
+				TIM_GenerateEvent(TIM3, TIM_EventSource_Update);
+			}
 			timeLeft = ui.lsSndDuration[0];
 			for(i=0; i<(ui.lsSndCnt-1); i++){
 				ui.lsSound[i] = ui.lsSound[i+1];
@@ -375,7 +370,6 @@ void UI_SpeakerProc(){
 		}
 		else
 			LS_PERIOD = 0;
-//			LS_DUTY = 0;
 			TIM_GenerateEvent(TIM3, TIM_EventSource_Update);
 	}
 	else

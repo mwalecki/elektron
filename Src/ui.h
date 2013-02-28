@@ -1,7 +1,8 @@
-#ifndef _LCD_H
-#define _LCD_H
+#ifndef _UI_H
+#define _UI_H
 
 #include "common.h"
+#include "ui_mariosounds.h"
 
 //##                                      #### ######## ################ DEFINES:
 #define LCD_XY_VBATT	3*6,0
@@ -104,6 +105,14 @@
 #define LS_noteA6x	1865
 #define LS_noteH6	1976
 #define LS_noteC7	2093
+
+#define UI_SND_POWER_UP 	SND_POWER_UP
+#define UI_SND_POWER_OFF	SND_DEATH
+#define UI_SND_KEY_UP		UI_SpeakerPlay(LS_noteE4, 10)
+#define UI_SND_KEY_DOWN		UI_SpeakerPlay(LS_noteE4, 10)
+#define UI_SND_ACTIVATE		SND_COIN
+#define UI_SND_DEACTIVATE	UI_SpeakerPlay(LS_noteC4, 10)
+#define UI_SND_WARNING		SND_DAMAGE
 
 //##                                      #### ######## ################ TYPEDEFS:
 

@@ -81,3 +81,7 @@ void commandSensors(void){
 
 	//USART1_SendString(":S0?\r\n");	
 }
+
+void systemMonitor(void){
+
+}
