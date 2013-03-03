@@ -3,8 +3,6 @@
 extern STDOWNCNT_St	STDownCnt[ST_Downcounters];	
 
 extern MCENTRAL_St		MCentral;
-extern MMOTOR_St		*MMotor;				  
-extern REFERENCE_St		Reference;	 
 extern USART_St			Usart1;
 extern NF_STRUCT_ComBuf 	NFComBuf;
 																				 
@@ -28,60 +26,48 @@ void modeSwitch(u8 newMode){
 	MCentral.mode = newMode;
 }
 
-void commandMotors(void){
-	uint8_t commArray[2];
-	uint8_t commCnt;
-	uint8_t bytesToSend;
+void internalCommunicationCycle(void){
+	uint8_t commArray[4];
+	uint8_t commCnt = 0;
+	uint8_t deviceAddress = 0;
+	static uint8_t commandSwitch = 0;
 
-	// Command Drive 1
-	commArray[0] = NF_COMMAND_SetDrivesSpeed;
-	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv1Address);
-	USART1_SendNBytes((char*)Usart1.txBuf, bytesToSend);	 
-					  
-	// Command Drive 2
-	commArray[0] = NF_COMMAND_SetDrivesSpeed;
-	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, NF_MotorDrv2Address);
-	USART1_SendNBytes((char*)Usart1.txBuf, bytesToSend);
-	
-	// Command Unimeter 1
-
-	
-	// Ponizej stare podejscie z komunikacja tekstowa
-	/*
-	switch(MCentral.mode){
-		case	M_ER_STOP:
-		case	M_STOP:
-			sprintf((char*) Usart1.txBuf, ":M0:STOP\r\n"); 
-			USART1_SendString((char*)Usart1.txBuf);	
-			sprintf((char*) Usart1.txBuf, ":M1:STOP\r\n"); 
-			USART1_SendString((char*)Usart1.txBuf);	
-		break;
-		case	M_SPEED:
-			sprintf((char*) Usart1.txBuf, ":M0:SP %d\r\n", Reference.leftSpeed); 
-			USART1_SendString((char*)Usart1.txBuf);	
-			sprintf((char*) Usart1.txBuf, ":M1:SP %d\r\n", Reference.rightSpeed); 
-			USART1_SendString((char*)Usart1.txBuf);	
-		break;
+	switch(commandSwitch){
+		case 0:
+			if(NFComBuf.SetDrivesSpeed.addr[0] != NFComBuf.SetDrivesSpeed.addr[1]){
+				commArray[commCnt++] = NF_COMMAND_SetDrivesSpeed;
+				commArray[commCnt++] = NF_COMMAND_ReadDrivesPosition;
+				deviceAddress = NFComBuf.SetDrivesSpeed.addr[0];
+				commandSwitch ++;
+				break;
+			}
+			commandSwitch ++;
+			//no break here
+		case 1:
+			commArray[commCnt++] = NF_COMMAND_SetDrivesSpeed;
+			commArray[commCnt++] = NF_COMMAND_ReadDrivesPosition;
+			deviceAddress = NFComBuf.SetDrivesSpeed.addr[1];
+			commandSwitch = 0;
+			break;
+		default:
+			commandSwitch ++;
+			break;
 	}
-	*/
+
+	Usart1.txCnt = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)commArray, commCnt, deviceAddress);
+	USART1_SendNBytes((char*)Usart1.txBuf, Usart1.txCnt);
 }
 
-void commandSensors(void){
-	uint8_t commArray[2];
-	uint8_t commCnt;
-	uint8_t bytesToSend;
-						 
-	// Command Unimeter 1
-	commArray[0] = NF_COMMAND_ReadAnalogInputs;
-	commCnt = 1;
-	bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NF_InOut1Address);
-	USART1_SendNBytes((char*)Usart1.txBuf+1, bytesToSend);
-
-	//USART1_SendString(":S0?\r\n");	
+void systemShutDown(uint16_t time100ms){
+	MCentral.shutdownCounter = time100ms;
 }
 
 void systemMonitor(void){
+	MCentral.batteryLow = (NFComBuf.ReadDeviceVitals.data[0] < MCentral.batteryVoltageWarn) ? 1 : 0;
 
+	if(MCentral.shutdownCounter > 0){
+		MCentral.shutdownCounter--;
+		if(MCentral.shutdownCounter == 0)
+			R_OFF_H();
+	}
 }

@@ -10,5 +10,6 @@ void modeSwitch(u8 newMode);
 void commandMotors(void);
 void commandSensors(void);
 void systemMonitor(void);
+void internalCommunicationCycle(void);
 
 #endif //_CENTRAL_H

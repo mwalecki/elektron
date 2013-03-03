@@ -39,8 +39,6 @@ uint8_t commCnt, usbBytesToSend, bufout_iter;
 //##                                      #### ######## ################ MAIN
 int main(void)
 {
-	uint8_t commandSwitch = 0;
-
 	//SystemInit();					// Init system clock (from library)
 	//RCC_Configuration();			// Init system clock (hand made)  
 	STM32EU_CL_RCC_Configuration();	// Init system clock (stm32.eu for CL)  
@@ -96,20 +94,7 @@ int main(void)
 		}   
 
 		if(STDownCnt[ST_CommCycle].tick){
-			switch(commandSwitch){
-				case 0:
-					commandSensors();
-					commandSwitch ++;
-					break;
-				case 5:
-					commandMotors();
-					commandSwitch = 0;
-					break;
-				default:
-					commandMotors();
-					commandSwitch ++;
-					break;
-			}
+			internalCommunicationCycle();
 			STDownCnt[ST_CommCycle].tick = 0;	  		   
 		}
 		if(STDownCnt[ST_UsartTxDelay].tick){
@@ -135,8 +120,8 @@ int main(void)
 		}		   
 		if(STDownCnt[ST_UsartCmdTo].tick){
 			modeSwitch(M_ER_STOP);
-			Reference.leftSpeed = 0;
-			Reference.rightSpeed = 0;
+			NFComBuf.SetDrivesSpeed.data[0] = 0;
+			NFComBuf.SetDrivesSpeed.data[1] = 0;
 			STDownCnt[ST_UsartCmdTo].tick = 0;
 		}		   
 		if(STDownCnt[ST_RelaysOff].tick){

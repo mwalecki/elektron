@@ -1,11 +1,7 @@
 #include "usart4.h"
 
 	 
-extern USART_St		Usart4;	   
-extern REFERENCE_St	Reference;	
-extern STDOWNCNT_St	STDownCnt[ST_Downcounters];		
-extern uint8_t 		crcTable[256]; 	 
-extern MSENSE_St	MSense;	  
+extern USART_St		Usart4;
 extern NF_STRUCT_ComBuf 	NFComBuf;
 
 
@@ -63,24 +59,6 @@ void USART4_Config(void){
 	USART_Cmd(UART4, ENABLE);
 }
 
-void USART4_SendParams(void)
-{
-	u8 i;
-	while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET)
-			;
-		USART_SendData(UART4, '#');
-	
-	for(i=0; i<=6; i++)
-	{
-		while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET)
-			;
-		USART_SendData(UART4, MSense.dist[i] >> 8);
-		while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET)
-			;
-		USART_SendData(UART4, MSense.dist[i] & 0xff);
-	}
-}
-
 void USART4_SendNBytes(char* buf, uint8_t bytesCnt)
 {
 	int i=0;
@@ -116,13 +94,6 @@ void UART4_IRQHandler(void)
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);
 		
 		if(NF_Interpreter(&NFComBuf, Usart4.rxBuf, &Usart4.rxPt, commArray, &commCnt) > 0){
-			Reference.leftSpeed = NFComBuf.SetDrivesSpeed.data[0];
-			Reference.rightSpeed = NFComBuf.SetDrivesSpeed.data[1];
-			Reference.srv1pos = NFComBuf.SetServosPosition.data[0];
-			Reference.srv2pos = NFComBuf.SetServosPosition.data[1];
-			Reference.srv3pos = NFComBuf.SetServosPosition.data[2];
-			Reference.srv4pos = NFComBuf.SetServosPosition.data[3];
-			Reference.digiOut = NFComBuf.SetDigitalOutputs.data[0];
 			NFComBuf.dataReceived = 1;
 
 			if(commCnt > 0){

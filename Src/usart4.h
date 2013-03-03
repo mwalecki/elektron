@@ -11,7 +11,6 @@
 #define USART4_RxFrameSz	11
 					
 void USART4_Config(void);
-void USART4_SendParams(void);
 void USART4_SendNBytes(char* buf, uint8_t bytesCnt);	
 
 #endif //_USART4_H

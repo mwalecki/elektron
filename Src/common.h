@@ -61,11 +61,15 @@ typedef struct{
 	u8	panelLink		:1;
 	u8	shuttingDown	:1;
 	u8	batteryLow		:1;
+	int16_t batteryVoltageShutDown;
+	int16_t batteryVoltageWarn;
+	uint16_t batteryWarnCounter;
+	uint16_t shutdownCounter;
 } MCENTRAL_St;
 
 typedef struct{
 	u8	mode;
-	s8	refSpeed;
+	s16	refSpeed;
 } MMOTOR_St;
 
 typedef struct{

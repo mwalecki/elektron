@@ -13,7 +13,6 @@
 void USART1_Config(void);
 void USART1_TXEN_H(void);
 void USART1_TXEN_L(void);		
-void USART1_Interpreter(u8* buf);
 void USART1_SendString(char* buf); 
 void USART1_SendNBytes(char* buf, uint8_t bytesCnt);
 

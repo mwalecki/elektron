@@ -15,6 +15,9 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->SetDrivesSpeed.addr[0] = NF_MotorDrv1Address;
 	NFComBuf->SetDrivesSpeed.addr[1] = NF_MotorDrv2Address;
 
+	NFComBuf->ReadDrivesPosition.addr[0] = NF_MotorDrv1Address;
+	NFComBuf->ReadDrivesPosition.addr[1] = NF_MotorDrv2Address;
+
 	NFComBuf->ReadDeviceVitals.addr[0] = NF_MainModuleAddress;
 	NFComBuf->ReadDeviceVitals.addr[1] = NF_MainModuleAddress;
 	NFComBuf->ReadDeviceVitals.addr[2] = NF_MainModuleAddress;
