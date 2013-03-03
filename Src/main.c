@@ -134,5 +134,9 @@ int main(void)
 			UI_LcdPrintBinaries();
 			STDownCnt[ST_UiProc].tick = 0;
 		}
+		if(STDownCnt[ST_SysMonitor].tick){
+			systemMonitor();
+			STDownCnt[ST_SysMonitor].tick = 0;
+		}
 	}
 }

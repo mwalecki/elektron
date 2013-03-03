@@ -19,8 +19,8 @@
 #define ST_Period6			1500
 #define ST_RelaysOff	7
 #define ST_Period7			5000
-#define ST_SensorsRead	8
-#define ST_Period8			4000
+#define ST_SysMonitor	8
+#define ST_Period8			1000
 #define ST_Downcounters	9
 
 #define ST_Period(n)	ST_Period ## n

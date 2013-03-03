@@ -65,6 +65,8 @@ void systemShutDown(uint16_t time100ms){
 void systemMonitor(void){
 	MCentral.batteryLow = (NFComBuf.ReadDeviceVitals.data[0] < MCentral.batteryVoltageWarn) ? 1 : 0;
 
+
+
 	if(MCentral.shutdownCounter > 0){
 		MCentral.shutdownCounter--;
 		if(MCentral.shutdownCounter == 0)
