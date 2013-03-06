@@ -18,15 +18,6 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->ReadDrivesPosition.addr[0] = NF_MotorDrv1Address;
 	NFComBuf->ReadDrivesPosition.addr[1] = NF_MotorDrv2Address;
 
-	NFComBuf->ReadDeviceVitals.addr[0] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[1] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[2] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[3] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[4] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[5] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[6] = NF_MainModuleAddress;
-	NFComBuf->ReadDeviceVitals.addr[7] = NF_MainModuleAddress;
-
 	NFComBuf->ReadAnalogInputs.addr[0] = NF_InOut1Address;
 	NFComBuf->ReadAnalogInputs.addr[1] = NF_InOut1Address;
 	NFComBuf->ReadAnalogInputs.addr[2] = NF_InOut1Address;
@@ -35,6 +26,22 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->ReadAnalogInputs.addr[5] = NF_InOut1Address;
 	NFComBuf->ReadAnalogInputs.addr[6] = NF_InOut1Address;
 	NFComBuf->ReadAnalogInputs.addr[7] = NF_InOut1Address;
+
+	NFComBuf->ReadDigitalInputs.addr[0] = NF_InOut1Address;
+	NFComBuf->ReadDigitalInputs.addr[1] = NF_MotorDrv1Address;
+
+	NFComBuf->SetDigitalOutputs.addr[0] = NF_MainModuleAddress;
+	NFComBuf->SetDigitalOutputs.addr[1] = NF_InOut1Address;
+
+	NFComBuf->SetServosPosition.addr[0] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[1] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[2] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[3] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[4] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[5] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[6] = NF_InOut1Address;
+	NFComBuf->SetServosPosition.addr[7] = NF_InOut1Address;
+
 
 	// Data initialization
 

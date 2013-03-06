@@ -15,6 +15,8 @@ void modeSwitch(u8 newMode){
 			case M_SPEED:
 				PS_EN_H();
 				ST_Reset(ST_RelaysOff);
+				NFComBuf.SetDrivesMode.data[0] = NF_DrivesMode_SPEED;
+				NFComBuf.SetDrivesMode.data[1] = NF_DrivesMode_SPEED;
 				PS_ON_H();
 				break;
 			case M_ER_STOP:
@@ -35,6 +37,7 @@ void internalCommunicationCycle(void){
 	switch(commandSwitch){
 		case 0:
 			if(NFComBuf.SetDrivesSpeed.addr[0] != NFComBuf.SetDrivesSpeed.addr[1]){
+				commArray[commCnt++] = NF_COMMAND_SetDrivesMode;
 				commArray[commCnt++] = NF_COMMAND_SetDrivesSpeed;
 				commArray[commCnt++] = NF_COMMAND_ReadDrivesPosition;
 				deviceAddress = NFComBuf.SetDrivesSpeed.addr[0];
@@ -44,9 +47,19 @@ void internalCommunicationCycle(void){
 			commandSwitch ++;
 			//no break here
 		case 1:
+			commArray[commCnt++] = NF_COMMAND_SetDrivesMode;
 			commArray[commCnt++] = NF_COMMAND_SetDrivesSpeed;
 			commArray[commCnt++] = NF_COMMAND_ReadDrivesPosition;
+			commArray[commCnt++] = NF_COMMAND_ReadDigitalInputs;
 			deviceAddress = NFComBuf.SetDrivesSpeed.addr[1];
+			commandSwitch ++;
+			break;
+		case 2:
+			commArray[commCnt++] = NF_COMMAND_SetServosPosition;
+			commArray[commCnt++] = NF_COMMAND_SetDigitalOutputs;
+			commArray[commCnt++] = NF_COMMAND_ReadAnalogInputs;
+			commArray[commCnt++] = NF_COMMAND_ReadDigitalInputs;
+			deviceAddress = NF_InOut1Address;
 			commandSwitch = 0;
 			break;
 		default:
