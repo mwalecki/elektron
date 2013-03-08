@@ -13,11 +13,13 @@
 #include "adc.h"
 #include "central.h"
 #include "nf/nfv2.h"
+#include "circbuf.h"
 
 #include "usb.h"
 
 //##                                      #### ######## ################ GLOBALS
 USART_St			Usart1, Usart4;
+CircularBuffer		cbUsart1Received;
 USB_St				USBMySCPI, USBNF;
 LED_St				Led;
 ADC_St				ADC;
@@ -39,6 +41,14 @@ uint8_t commCnt, usbBytesToSend, bufout_iter;
 //##                                      #### ######## ################ MAIN
 int main(void)
 {
+	uint8_t newByte;
+	uint8_t u1commArray[10];
+	uint8_t u1commCnt;
+	uint8_t u1BytesToSend;
+	uint8_t u1ByteReceived;
+	uint8_t idle_cycles;
+
+
 	//SystemInit();					// Init system clock (from library)
 	//RCC_Configuration();			// Init system clock (hand made)  
 	STM32EU_CL_RCC_Configuration();	// Init system clock (stm32.eu for CL)  
@@ -66,16 +76,35 @@ int main(void)
 	
 	USART1_SendString("Hello!\r\n");
 
-	while (1){	
-		if(Usart1.rxDataReady){    
-		//	strncpy((char*)Usart1.tmpBuf,(const char*)Usart1.rxBuf, 15);
-			Usart1.rxDataReady=0;
-		//	USART1_Interpreter((u8*)Usart1.tmpBuf);
-		}   
-		//if(USBBufs.txDataReady){
-		//	USBBufs.txDataReady = 0;
-		//	VCP_myTransmit((uint8_t*)USBBufs.txBuf, USBBufs.txCnt);
-		//}
+	while (1){
+
+		while(cbIsEmpty(&cbUsart1Received) == 0){
+			cbRead(&cbUsart1Received, &newByte);
+			Usart1.rxBuf[Usart1.rxPt] = newByte;
+
+					if(NF_Interpreter(&NFComBuf, (uint8_t*) Usart1.rxBuf, (uint8_t*) &Usart1.rxPt, u1commArray, &u1commCnt) > 0){
+						NFComBuf.dataReceived = 1;
+						//only master mode on USART1
+//						if(u1commCnt > 0){
+//							u1BytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)u1commArray, u1commCnt, NFComBuf.myAddress);
+//							if(u1BytesToSend > 0){
+//								USART1_SendNBytes((uint8_t*)Usart1.txBuf, u1BytesToSend);
+//							}
+//						}
+					}
+		}
+
+
+		if(STDownCnt[ST_CommCycle].tick){
+		//	if((NFComBuf.dataReceived != 0) || (idle_cycles == 2)){
+				internalCommunicationCycle();
+		//		idle_cycles = 0;
+		//	}
+		//	else
+		//		idle_cycles ++;
+			STDownCnt[ST_CommCycle].tick = 0;
+		}
+
 		if(NFComBuf.dataReceived != 0){ 
 			NFComBuf.dataReceived = 0;
 			ST_Reset(ST_UsartCmdTo);
@@ -91,12 +120,8 @@ int main(void)
 			((NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) ? REL4_ON() : REL4_OFF());
 
 			((NFComBuf.SetDigitalOutputs.data[0] & (1<<7)) ? R_OFF_H() : R_OFF_L());
-		}   
-
-		if(STDownCnt[ST_CommCycle].tick){
-			internalCommunicationCycle();
-			STDownCnt[ST_CommCycle].tick = 0;	  		   
 		}
+
 		if(STDownCnt[ST_UsartTxDelay].tick){
 			if(Usart1.txDataReady){
 		//		USART1_SendString((char*) Usart1.txBuf);

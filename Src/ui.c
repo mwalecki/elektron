@@ -286,7 +286,7 @@ void UI_KeyboardProc(void)
 				}
 				break;
 			case KEY_Off:
-				UI_SND_POWER_OFF;
+				//UI_SND_POWER_OFF;
 				break;
 			}
 		}

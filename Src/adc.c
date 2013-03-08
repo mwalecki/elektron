@@ -4,9 +4,6 @@
 extern ADC_St ADC;
 extern NF_STRUCT_ComBuf 	NFComBuf;
 
-#define ADC1_DR_Address    ((uint32_t)0x4001244C)
-#define ADC_DMA_TransferCompleteInterrupt
-
 void ADCwithDMA_Config(void){
 	ADC_InitTypeDef ADC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
@@ -57,14 +54,7 @@ void ADCwithDMA_Config(void){
 	/* Enable DMA1 channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
-	#ifdef ADC_DMA_TransferCompleteInterrupt	
-		/* Enable DMA1 channel1 IRQ Channel */
-		NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
-	#endif //ADC_DMA_TransferCompleteInterrupt
+	// Interrupts configured in interrupts.c
 	 
 	/* ADC1 configuration ------------------------------------------------------*/
 	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;

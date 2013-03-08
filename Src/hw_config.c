@@ -140,6 +140,9 @@ void USB_Interrupts_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
 
+  //Interrupts configured in interrupts.c
+  return;
+
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
 #if defined(STM32L1XX_MD) || defined(STM32L1XX_HD) || defined(STM32L1XX_MD_PLUS) 

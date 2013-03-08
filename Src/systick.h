@@ -10,11 +10,11 @@
 #define ST_EncSpeed		2
 #define ST_Period2			100
 #define ST_UsartCmdTo	3
-#define ST_Period3			10000
+#define ST_Period3			2000
 #define ST_UsartTxDelay	4
 #define ST_Period4			10
 #define ST_CommCycle	5
-#define ST_Period5			1500
+#define ST_Period5			200
 #define ST_ADC			6
 #define ST_Period6			1500
 #define ST_RelaysOff	7
