@@ -28,6 +28,8 @@
 #define LCD_XY_CUR1		20*6,1
 #define LCD_XY_CUR2		20*6,2
 #define LCD_XY_CUR3		20*6,3
+#define LCD_XY_MESSAGE0	0*6,5
+#define LCD_XY_MESSAGE1	0*6,6
 
 #define KEY_Up		0
 #define KEY_Down	1
@@ -56,6 +58,7 @@
 // Frequencies for equal-tempered scale
 // http://www.phy.mtu.edu/~suits/notefreqs.html
 #define LS_PAUSE 	0
+#define LS_noteA2	117
 #define LS_noteC3	131
 #define LS_noteC3x	139
 #define LS_noteD3	147

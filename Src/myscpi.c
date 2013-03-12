@@ -5,10 +5,12 @@
 #include "adc.h"
 #include "nf/nfv2.h"
 #include "eebackup.h"
+#include "central.h"
 
 extern uint16_t 	serialNumber;
 extern NF_STRUCT_ComBuf 	NFComBuf;
 extern uint8_t MotorControllerAddr0, MotorControllerAddr1, InputOutputAddr0;
+extern MCENTRAL_St			MCentral;
 
 uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, volatile uint8_t *txBuf, volatile uint8_t *txCnt)
 {
@@ -53,11 +55,18 @@ uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, vola
 
 	else
 	_GROUP(":ADDR")
-		_GET_SET_MEMBER(MotorControllerAddr0, "MC0")
+		_GET_SET_MEMBER(MotorControllerAddr0, ":MC0")
 		else
-		_GET_SET_MEMBER(MotorControllerAddr1, "MC1")
+		_GET_SET_MEMBER(MotorControllerAddr1, ":MC1")
 		else
-		_GET_SET_MEMBER(InputOutputAddr0, "IO0")
+		_GET_SET_MEMBER(InputOutputAddr0, ":IO0")
+	_ENDGROUP
+
+	else
+	_GROUP(":BATT")
+		_GET_SET_MEMBER(MCentral.batteryVoltageLow, ":LOW")
+		else
+		_GET_SET_MEMBER(MCentral.batteryVoltageCritical, ":CRIT")
 	_ENDGROUP
 
 	else
@@ -65,7 +74,7 @@ uint8_t MYSCPI_Interpreter(volatile uint8_t *rxBuf, volatile uint8_t *rxPt, vola
 		_IF_MEMBER_THEN(":DEF")
 			eebackup_SaveInitialValues();
 		else
-		_IF_MEMBER_THEN(":STO")
+		_IF_MEMBER_THEN(":STOR")
 			eebackup_SaveAll();
 		else
 		_IF_MEMBER_THEN(":REC")

@@ -1,6 +1,8 @@
 #include "stdio.h"
 #include "nf/nfv2.h"
 
+extern uint8_t MotorControllerAddr0, MotorControllerAddr1, InputOutputAddr0;
+
 void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 
 	NFComBuf->myAddress = myAddress;
@@ -9,14 +11,14 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	// Address map is essential only when device acts as Master on NFv2 bus.
 
 
-	NFComBuf->SetDrivesMode.addr[0] = NF_MotorDrv1Address;
-	NFComBuf->SetDrivesMode.addr[1] = NF_MotorDrv2Address;
+	NFComBuf->SetDrivesMode.addr[0] = MotorControllerAddr0;
+	NFComBuf->SetDrivesMode.addr[1] = MotorControllerAddr1;
 
-	NFComBuf->SetDrivesSpeed.addr[0] = NF_MotorDrv1Address;
-	NFComBuf->SetDrivesSpeed.addr[1] = NF_MotorDrv2Address;
+	NFComBuf->SetDrivesSpeed.addr[0] = MotorControllerAddr0;
+	NFComBuf->SetDrivesSpeed.addr[1] = MotorControllerAddr1;
 
-	NFComBuf->ReadDrivesPosition.addr[0] = NF_MotorDrv1Address;
-	NFComBuf->ReadDrivesPosition.addr[1] = NF_MotorDrv2Address;
+	NFComBuf->ReadDrivesPosition.addr[0] = MotorControllerAddr0;
+	NFComBuf->ReadDrivesPosition.addr[1] = MotorControllerAddr1;
 
 	NFComBuf->ReadAnalogInputs.addr[0] = NF_InOut1Address;
 	NFComBuf->ReadAnalogInputs.addr[1] = NF_InOut1Address;
@@ -28,7 +30,7 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->ReadAnalogInputs.addr[7] = NF_InOut1Address;
 
 	NFComBuf->ReadDigitalInputs.addr[0] = NF_InOut1Address;
-	NFComBuf->ReadDigitalInputs.addr[1] = NF_MotorDrv1Address;
+	NFComBuf->ReadDigitalInputs.addr[1] = MotorControllerAddr1;
 
 	NFComBuf->SetDigitalOutputs.addr[0] = NF_MainModuleAddress;
 	NFComBuf->SetDigitalOutputs.addr[1] = NF_InOut1Address;

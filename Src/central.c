@@ -1,4 +1,6 @@
 #include "central.h"
+#include "ui.h"
+#include "systick.h"
 					   
 extern STDOWNCNT_St	STDownCnt[ST_Downcounters];	
 
@@ -71,18 +73,56 @@ void internalCommunicationCycle(void){
 	USART1_SendNBytes((char*)Usart1.txBuf, Usart1.txCnt);
 }
 
-void systemShutDown(uint16_t time100ms){
-	MCentral.shutdownCounter = time100ms;
+void systemShutDown(uint16_t seconds){
+	MCentral.shutdownCounter = (10000 / STDownCnt[ST_SysMonitor].period) * seconds;
+}
+
+void systemBatteryWarn(uint16_t seconds){
+	MCentral.batteryWarnCounter = (10000 / STDownCnt[ST_SysMonitor].period) * seconds;
 }
 
 void systemMonitor(void){
-	MCentral.batteryLow = (NFComBuf.ReadDeviceVitals.data[0] < MCentral.batteryVoltageWarn) ? 1 : 0;
+	static uint16_t battLowCnt;
+	static uint16_t battCritCnt;
+
+	MCentral.batteryLow = (NFComBuf.ReadDeviceVitals.data[0] < MCentral.batteryVoltageLow) ? 1 : 0;
+	MCentral.batteryCritical = (NFComBuf.ReadDeviceVitals.data[0] < MCentral.batteryVoltageCritical) ? 1 : 0;
+
+	// Battery Low
+	if(MCentral.batteryLow != 0  && MCentral.batteryCritical == 0){
+		if(MCentral.batteryWarnCounter == 0)
+			systemBatteryWarn(BATTERY_WARN_T);
+	}
+	else{
+		systemBatteryWarn(0);
+	}
+
+	// Battery Critical
+	if(MCentral.batteryCritical){
+		if(MCentral.shutdownCounter == 0)
+			systemShutDown(BATT_CRIT_SHUTDOWN_T);
+	}
+	else{
+		systemShutDown(0);
+	}
 
 
+	// Battery Warn Counter
+	if(MCentral.batteryWarnCounter > 0){
+		MCentral.batteryWarnCounter--;
+		if(MCentral.batteryWarnCounter == 0) {
+			UI_SND_WARNING;
+			systemBatteryWarn(BATTERY_WARN_T);
+		}
+	}
 
+	// ShutDown Counter
 	if(MCentral.shutdownCounter > 0){
 		MCentral.shutdownCounter--;
 		if(MCentral.shutdownCounter == 0)
 			R_OFF_H();
+	}
+	if(MCentral.shutdownCounter == (7000 / STDownCnt[ST_SysMonitor].period) * BATT_CRIT_SHUTDOWN_T){
+		UI_SND_POWER_OFF;
 	}
 }

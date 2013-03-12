@@ -2,6 +2,8 @@
 #include "circbuf.h"
 #include "myscpi/myscpi.h"
 #include "nf/nfv2.h"
+#include "systick.h"
+#include "central.h"
 
 uint8_t cbUSBRxData[CB_USBRX_BUF_SIZE];
 CircularBuffer	cbUSBReceived;
@@ -9,6 +11,8 @@ extern USB_St	USBMySCPI, USBNF;
 extern NF_STRUCT_ComBuf 	NFComBuf;
 extern DEVICE_INFO *pInformation;
 
+STDOWNCNT_St		STDownCnt[ST_Downcounters];
+extern MCENTRAL_St		MCentral;
 
 extern uint8_t USB_Rx_Buffer[VIRTUAL_COM_PORT_DATA_SIZE];
 extern uint16_t USB_Rx_Cnt;
@@ -80,6 +84,8 @@ void USB_ProcessReceivedData(void) {
 				USBNF.txCnt = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)USBNF.txBuf, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
 				USB_SendNBytes((uint8_t*)USBNF.txBuf, USBNF.txCnt);
 			}
+			ST_Reset(ST_UsartCmdTo);
+			MCentral.computerLink = 1;
 		}
 	}
 }

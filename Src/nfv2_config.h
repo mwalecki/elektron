@@ -5,8 +5,8 @@
 #define NF_BroadcastAddress		0x00
 #define NF_MainModuleAddress	0x01
 
-#define NF_MotorDrv1Address		0x10
-#define NF_MotorDrv2Address		0x11
+//#define NF_MotorDrv1Address		0x10
+//#define NF_MotorDrv2Address		0x11
 #define NF_InOut1Address		0x30
 
 /*

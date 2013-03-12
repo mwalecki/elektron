@@ -6,8 +6,10 @@
 #include "nf/nfv2.h"
 #include "usb.h"
 #include "io.h"
+#include "central.h"
 
 extern NF_STRUCT_ComBuf 	NFComBuf;
+extern MCENTRAL_St		MCentral;
 
 UI_St ui;
 
@@ -76,7 +78,9 @@ void UI_LcdPrintBinaries(void) {
 	GLCD_GoTo(LCD_XY_USB);
 	USB_IsConfigured() ?
 			GLCD_WriteStringNegative("usb") : GLCD_WriteString("usb");
-
+	GLCD_GoTo(LCD_XY_LINK);
+	MCentral.computerLink ?
+			GLCD_WriteStringNegative("link") : GLCD_WriteString("link");
 	GLCD_GoTo(LCD_XY_O0);
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) ?
 			GLCD_WriteStringNegative("o0") : GLCD_WriteString("o0");
@@ -90,6 +94,12 @@ void UI_LcdPrintBinaries(void) {
 	(NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) ?
 			GLCD_WriteStringNegative("o3") : GLCD_WriteString("o3");
 
+	GLCD_GoTo(LCD_XY_MESSAGE0);
+	(MCentral.batteryLow) ?
+			GLCD_WriteStringNegative(" battery low ") : GLCD_WriteString("             ");
+	GLCD_GoTo(LCD_XY_MESSAGE1);
+	(MCentral.batteryCritical) ?
+			GLCD_WriteStringNegative("shutting down") : GLCD_WriteString("             ");
 
 
 

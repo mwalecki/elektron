@@ -11,6 +11,7 @@
 #include "usart4.h"
 #include "io.h"
 #include "adc.h"
+#include "eeprom.h"
 #include "central.h"
 #include "nf/nfv2.h"
 #include "circbuf.h"
@@ -46,13 +47,15 @@ int main(void)
 	uint8_t u1commCnt;
 	uint8_t u1BytesToSend;
 	uint8_t u1ByteReceived;
-	uint8_t idle_cycles;
 
+	// Init system clock (stm32.eu for CL)
+	STM32EU_CL_RCC_Configuration();
 
-	//SystemInit();					// Init system clock (from library)
-	//RCC_Configuration();			// Init system clock (hand made)  
-	STM32EU_CL_RCC_Configuration();	// Init system clock (stm32.eu for CL)  
-	NVIC_Configuration();	// NVIC_Configuration
+	// Init nonvolatile memory and recover saved values of peirpherals data buffers
+	EEPROM_Init(0);
+	eebackup_Recover();
+
+	NVIC_Configuration();
 	SYSTICK_Init(STDownCnt);
 	LED_Config();
 	UI_Config();
@@ -66,15 +69,15 @@ int main(void)
 
 	USB_Config();
 
-	LED_Set(1<<0, //mask
+	LED_Set(1<<0,	//mask
 			1<<0,	//newState
-			1<<0);//blink
-	
+			1<<0);	//blink
+
+	// Execute NFv2_Config() after init of all peripherals.
+	// NFv2_Config() may set some data in NFComBuf to current values
+	// read from already initiated peripherals.
 	NFv2_CrcInit();
 	NFv2_Config(&NFComBuf, NF_MainModuleAddress);
-
-	
-	USART1_SendString("Hello!\r\n");
 
 	while (1){
 
@@ -82,32 +85,25 @@ int main(void)
 			cbRead(&cbUsart1Received, &newByte);
 			Usart1.rxBuf[Usart1.rxPt] = newByte;
 
-					if(NF_Interpreter(&NFComBuf, (uint8_t*) Usart1.rxBuf, (uint8_t*) &Usart1.rxPt, u1commArray, &u1commCnt) > 0){
-						NFComBuf.dataReceived = 1;
-						//only master mode on USART1
-//						if(u1commCnt > 0){
-//							u1BytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)u1commArray, u1commCnt, NFComBuf.myAddress);
-//							if(u1BytesToSend > 0){
-//								USART1_SendNBytes((uint8_t*)Usart1.txBuf, u1BytesToSend);
-//							}
-//						}
-					}
+			if(NF_Interpreter(&NFComBuf, (uint8_t*) Usart1.rxBuf, (uint8_t*) &Usart1.rxPt, u1commArray, &u1commCnt) > 0){
+				NFComBuf.dataReceived = 1;
+//				//only master mode on USART1
+//				if(u1commCnt > 0){
+//					u1BytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)u1commArray, u1commCnt, NFComBuf.myAddress);
+//					if(u1BytesToSend > 0){
+//						USART1_SendNBytes((uint8_t*)Usart1.txBuf, u1BytesToSend);
+//					}
+//				}
+			}
 		}
 
-
 		if(STDownCnt[ST_CommCycle].tick){
-		//	if((NFComBuf.dataReceived != 0) || (idle_cycles == 2)){
 				internalCommunicationCycle();
-		//		idle_cycles = 0;
-		//	}
-		//	else
-		//		idle_cycles ++;
 			STDownCnt[ST_CommCycle].tick = 0;
 		}
 
 		if(NFComBuf.dataReceived != 0){ 
 			NFComBuf.dataReceived = 0;
-			ST_Reset(ST_UsartCmdTo);
 
 			if(NFComBuf.SetDrivesMode.data[0] == NF_DrivesMode_SPEED)
 				modeSwitch(M_SPEED);
@@ -147,6 +143,7 @@ int main(void)
 			modeSwitch(M_ER_STOP);
 			NFComBuf.SetDrivesSpeed.data[0] = 0;
 			NFComBuf.SetDrivesSpeed.data[1] = 0;
+			MCentral.computerLink = 0;
 			STDownCnt[ST_UsartCmdTo].tick = 0;
 		}		   
 		if(STDownCnt[ST_RelaysOff].tick){
