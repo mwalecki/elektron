@@ -1,4 +1,5 @@
 #include "systick.h"
+#include "central.h"
 
 extern STDOWNCNT_St	STDownCnt[ST_Downcounters];
 
@@ -41,5 +42,12 @@ void SysTick_Handler(void)
 //		MOTOR_Proc();
 //		STDownCnt[ST_MotorProc].tick = 0;
 //	}
+
+
+
+	if(STDownCnt[ST_CommCycle].tick){
+			internalCommunicationCycle();
+		STDownCnt[ST_CommCycle].tick = 0;
+	}
 }
 

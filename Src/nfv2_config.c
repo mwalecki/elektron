@@ -30,7 +30,8 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->ReadAnalogInputs.addr[7] = NF_InOut1Address;
 
 	NFComBuf->ReadDigitalInputs.addr[0] = NF_InOut1Address;
-	NFComBuf->ReadDigitalInputs.addr[1] = MotorControllerAddr1;
+	NFComBuf->ReadDigitalInputs.addr[1] = NF_InOut1Address;
+	NFComBuf->ReadDigitalInputs.addr[2] = MotorControllerAddr1;
 
 	NFComBuf->SetDigitalOutputs.addr[0] = NF_MainModuleAddress;
 	NFComBuf->SetDigitalOutputs.addr[1] = NF_InOut1Address;

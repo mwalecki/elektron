@@ -114,24 +114,24 @@ void USART1_IRQHandler(void)
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 		// Read one byte from the receive data register
-		//Usart1.rxBuf[Usart1.rxPt] = USART_ReceiveData(USART1);
+		Usart1.rxBuf[Usart1.rxPt] = USART_ReceiveData(USART1);
 		// Clear the USARTx Receive interrupt
-		//USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 
-		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET){
-			// Clear the USARTx Receive interrupt
-			USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-
-			u1ByteReceived = USART_ReceiveData(USART1);
-			cbWrite(&cbUsart1Received, &u1ByteReceived);
+//		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET){
+//			// Clear the USARTx Receive interrupt
+//			USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+//
+//			u1ByteReceived = USART_ReceiveData(USART1);
+//			cbWrite(&cbUsart1Received, &u1ByteReceived);
 		
-		/*if(NF_Interpreter(&NFComBuf, Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
+		if(NF_Interpreter(&NFComBuf, Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
 			Usart1.rxDataReady = 1;
 			// Only Master Mode on USART1
 			//if(commCnt > 0){
 			//	Usart1.txCnt = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
 			//	USART1_SendNBytes((char*)Usart1.txBuf+1, Usart1.txCnt);
-			}*/
+			//}
 		}
 	}
 }

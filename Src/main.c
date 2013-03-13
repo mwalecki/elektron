@@ -56,7 +56,6 @@ int main(void)
 	eebackup_Recover();
 
 	NVIC_Configuration();
-	SYSTICK_Init(STDownCnt);
 	LED_Config();
 	UI_Config();
 	OUT_Config();
@@ -79,28 +78,31 @@ int main(void)
 	NFv2_CrcInit();
 	NFv2_Config(&NFComBuf, NF_MainModuleAddress);
 
+
+	SYSTICK_Init(STDownCnt);
+
 	while (1){
 
-		while(cbIsEmpty(&cbUsart1Received) == 0){
-			cbRead(&cbUsart1Received, &newByte);
-			Usart1.rxBuf[Usart1.rxPt] = newByte;
+//		while(cbIsEmpty(&cbUsart1Received) == 0){
+//			cbRead(&cbUsart1Received, &newByte);
+//			Usart1.rxBuf[Usart1.rxPt] = newByte;
+//
+//			if(NF_Interpreter(&NFComBuf, (uint8_t*) Usart1.rxBuf, (uint8_t*) &Usart1.rxPt, u1commArray, &u1commCnt) > 0){
+//				NFComBuf.dataReceived = 1;
+////				//only master mode on USART1
+////				if(u1commCnt > 0){
+////					u1BytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)u1commArray, u1commCnt, NFComBuf.myAddress);
+////					if(u1BytesToSend > 0){
+////						USART1_SendNBytes((uint8_t*)Usart1.txBuf, u1BytesToSend);
+////					}
+////				}
+//			}
+//		}
 
-			if(NF_Interpreter(&NFComBuf, (uint8_t*) Usart1.rxBuf, (uint8_t*) &Usart1.rxPt, u1commArray, &u1commCnt) > 0){
-				NFComBuf.dataReceived = 1;
-//				//only master mode on USART1
-//				if(u1commCnt > 0){
-//					u1BytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart1.txBuf, (const uint8_t*)u1commArray, u1commCnt, NFComBuf.myAddress);
-//					if(u1BytesToSend > 0){
-//						USART1_SendNBytes((uint8_t*)Usart1.txBuf, u1BytesToSend);
-//					}
-//				}
-			}
-		}
-
-		if(STDownCnt[ST_CommCycle].tick){
-				internalCommunicationCycle();
-			STDownCnt[ST_CommCycle].tick = 0;
-		}
+//		if(STDownCnt[ST_CommCycle].tick){
+//				internalCommunicationCycle();
+//			STDownCnt[ST_CommCycle].tick = 0;
+//		}
 
 		if(NFComBuf.dataReceived != 0){ 
 			NFComBuf.dataReceived = 0;

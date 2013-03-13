@@ -45,7 +45,7 @@
 //	#define NF_BUFSZ_ReadServosStatus		28
 											
 	#define NF_BUFSZ_SetDigitalOutputs		2
-	#define NF_BUFSZ_ReadDigitalInputs		2
+	#define NF_BUFSZ_ReadDigitalInputs		3
 	#define NF_BUFSZ_ReadAnalogInputs		8
 	
 //	#define NF_BUFSZ_ReadDistance			8  
