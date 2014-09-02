@@ -17,6 +17,15 @@ void NFv2_Config(NF_STRUCT_ComBuf *NFComBuf, uint8_t myAddress){
 	NFComBuf->SetDrivesSpeed.addr[0] = MotorControllerAddr0;
 	NFComBuf->SetDrivesSpeed.addr[1] = MotorControllerAddr1;
 
+	NFComBuf->SetDrivesPWM.addr[0] = MotorControllerAddr0;
+	NFComBuf->SetDrivesPWM.addr[1] = MotorControllerAddr1;
+
+	NFComBuf->SetDrivesMaxSpeed.addr[0] = MotorControllerAddr0;
+	NFComBuf->SetDrivesMaxSpeed.addr[1] = MotorControllerAddr1;
+
+	//NFComBuf->SetSpeedRegulator.addr[0] = MotorControllerAddr0;
+	//NFComBuf->SetSpeedRegulator.addr[1] = MotorControllerAddr1;
+
 	NFComBuf->ReadDrivesPosition.addr[0] = MotorControllerAddr0;
 	NFComBuf->ReadDrivesPosition.addr[1] = MotorControllerAddr1;
 

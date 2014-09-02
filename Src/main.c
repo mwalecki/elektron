@@ -1,4 +1,4 @@
-//##                                      #### ######## ################ INCLUDES
+	//##                                      #### ######## ################ INCLUDES
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
@@ -110,6 +110,8 @@ int main(void)
 
 			if(NFComBuf.SetDrivesMode.data[0] == NF_DrivesMode_SPEED)
 				modeSwitch(M_SPEED);
+			else if(NFComBuf.SetDrivesMode.data[0] == NF_DrivesMode_PWM)
+				modeSwitch(M_PWM);
 			else 
 				modeSwitch(M_ER_STOP);	
 
@@ -141,7 +143,7 @@ int main(void)
 			}
 			else{
 				temp8=1;
-//				UI_LcdPrintAnalogs();
+				UI_LcdPrintAnalogs();
 				LED_Set(1<<0, //mask
 					0<<0,	//newState
 					0<<0);//blink
@@ -161,7 +163,7 @@ int main(void)
 		if(STDownCnt[ST_UiProc].tick){
 			UI_SpeakerProc();
 			UI_KeyboardProc();
-//			UI_LcdPrintBinaries();
+			UI_LcdPrintBinaries();
 			STDownCnt[ST_UiProc].tick = 0;
 		}
 		if(STDownCnt[ST_SysMonitor].tick){
