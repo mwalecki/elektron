@@ -42,6 +42,7 @@ uint8_t commCnt, usbBytesToSend, bufout_iter;
 //##                                      #### ######## ################ MAIN
 int main(void)
 {
+	uint8_t temp8 = 0;
 	uint8_t newByte;
 	uint8_t u1commArray[10];
 	uint8_t u1commCnt;
@@ -132,14 +133,19 @@ int main(void)
 			//LED_Proc();
 			STDownCnt[ST_StatusLed].tick = 0;
 
-
-			LED_Set(1<<0, //mask
-					1<<0,	//newState
-					0<<0);//blink
-			UI_LcdPrintAnalogs();
-			LED_Set(1<<0, //mask
+			if(temp8){
+				temp8=0;
+				LED_Set(1<<0, //mask
+						1<<0,	//newState
+						0<<0);//blink
+			}
+			else{
+				temp8=1;
+//				UI_LcdPrintAnalogs();
+				LED_Set(1<<0, //mask
 					0<<0,	//newState
 					0<<0);//blink
+			}
 		}		   
 		if(STDownCnt[ST_UsartCmdTo].tick){
 			modeSwitch(M_ER_STOP);
@@ -155,7 +161,7 @@ int main(void)
 		if(STDownCnt[ST_UiProc].tick){
 			UI_SpeakerProc();
 			UI_KeyboardProc();
-			UI_LcdPrintBinaries();
+//			UI_LcdPrintBinaries();
 			STDownCnt[ST_UiProc].tick = 0;
 		}
 		if(STDownCnt[ST_SysMonitor].tick){
