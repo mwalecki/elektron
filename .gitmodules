@@ -1,6 +1,0 @@
-[submodule "Src/nf"]
-	path = Src/nf
-	url = https://github.com/mwalecki/nf.git
-[submodule "Src/myscpi"]
-	path = Src/myscpi
-	url = https://github.com/mwalecki/myscpi.git
