@@ -38,9 +38,9 @@ GPIO_InitTypeDef GPIO_InitStructure;
 void GLCD_Delay(void)
 {
 	int i = 0;
-	while (++i<100)
-		;
-	asm("nop");asm("nop");asm("nop");asm("nop");
+	while (++i<1)
+	  asm("nop");
+
 }
 //-------------------------------------------------------------------------------------------------
 // Enalbe Controller (0-2)

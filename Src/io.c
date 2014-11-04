@@ -1,4 +1,7 @@
 #include "io.h"
+#include "systick.h"
+
+extern DEVICE_CONTROL_St      DevControl;
 																				 
 void OUT1_ON(void)		{GPIO_SetBits(OUT1_GPIO, OUT1_PIN);}
 void OUT1_OFF(void)		{GPIO_ResetBits(OUT1_GPIO, OUT1_PIN);}					 
@@ -49,4 +52,19 @@ void OUT_Set(u8 set){
 	if(set & (1<<5)) OUT6_ON();	else OUT6_OFF();
 //	if(set & (1<<6)) OUT7_ON();	else OUT7_OFF();
 //	if(set & (1<<7)) OUT8_ON();	else OUT8_OFF();
+}
+
+void OUT_Control(void){
+  static uint16_t outputs;
+
+  if(DevControl.digitalOutputs == outputs)
+    return;
+
+  outputs = DevControl.digitalOutputs;
+
+  ((outputs & (1<<0)) ? REL1_ON() : REL1_OFF());
+  ((outputs & (1<<1)) ? REL2_ON() : REL2_OFF());
+  ((outputs & (1<<2)) ? REL3_ON() : REL3_OFF());
+  ((outputs & (1<<3)) ? REL4_ON() : REL4_OFF());
+  ((outputs & (1<<7)) ? R_OFF_H() : R_OFF_L());
 }

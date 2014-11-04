@@ -1,16 +1,14 @@
 #include "usart1.h"
 #include "circbuf.h"
 
-extern NF_STRUCT_ComBuf 	NFComBuf;
 extern USART_St		Usart1;
 
 uint8_t cbUsart1RxData[256];
 extern CircularBuffer	cbUsart1Received;
 
-void USART1_Config(void){						   
+void USART1_Config(USART_InitTypeDef USART_InitStructure){
 	GPIO_InitTypeDef GPIO_InitStructure;  
     USART_ClockInitTypeDef  USART_ClockInitStructure;
-	USART_InitTypeDef USART_InitStructure;
 
 	// Usart Received Data Circular Buffer Init
 	cbInit(&cbUsart1Received, cbUsart1RxData, 256);
@@ -48,12 +46,14 @@ void USART1_Config(void){
     USART_ClockInit(USART1, &USART_ClockInitStructure); 
 
 	// USART1 Configuration
-	USART_InitStructure.USART_BaudRate = 57600; //57600
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
+//	USART_InitStructure.USART_BaudRate = 57600; //57600
+//	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+//	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+//	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+//	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
+	// USART1 Init
 	USART_Init(USART1, &USART_InitStructure);
 
 	// Enable USART1 Receive interrupt
@@ -105,36 +105,36 @@ void USART1_SendNBytes(char* buf, uint8_t bytesCnt)
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 }
 
-void USART1_IRQHandler(void)
-{
-	uint8_t commArray[2];
-	uint8_t commCnt;
-	uint8_t u1ByteReceived;
-
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		// Read one byte from the receive data register
-		Usart1.rxBuf[Usart1.rxPt] = USART_ReceiveData(USART1);
-		// Clear the USARTx Receive interrupt
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-
-//		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET){
-//			// Clear the USARTx Receive interrupt
-//			USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+//void USART1_IRQHandler(void)
+//{
+//	uint8_t commArray[2];
+//	uint8_t commCnt;
+//	uint8_t u1ByteReceived;
 //
-//			u1ByteReceived = USART_ReceiveData(USART1);
-//			cbWrite(&cbUsart1Received, &u1ByteReceived);
-		
-		if(NF_Interpreter(&NFComBuf, Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
-			Usart1.rxDataReady = 1;
-			// Only Master Mode on USART1
-			//if(commCnt > 0){
-			//	Usart1.txCnt = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
-			//	USART1_SendNBytes((char*)Usart1.txBuf+1, Usart1.txCnt);
-			//}
-		}
-	}
-}
+//	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+//	{
+//		// Read one byte from the receive data register
+//		Usart1.rxBuf[Usart1.rxPt] = USART_ReceiveData(USART1);
+//		// Clear the USARTx Receive interrupt
+//		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+//
+////		if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET){
+////			// Clear the USARTx Receive interrupt
+////			USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+////
+////			u1ByteReceived = USART_ReceiveData(USART1);
+////			cbWrite(&cbUsart1Received, &u1ByteReceived);
+//
+////		if(NF_Interpreter(&NFComBuf, Usart1.rxBuf, &Usart1.rxPt, commArray, &commCnt) > 0){
+////			Usart1.rxDataReady = 1;
+//			// Only Master Mode on USART1
+//			//if(commCnt > 0){
+//			//	Usart1.txCnt = NF_MakeCommandFrame((uint8_t*)Usart1.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
+//			//	USART1_SendNBytes((char*)Usart1.txBuf+1, Usart1.txCnt);
+//			//}
+//		//}
+//	}
+//}
 
 void	USART1_TXEN_H(void)		{GPIO_SetBits(GPIOD, GPIO_Pin_7);}
 void	USART1_TXEN_L(void)		{GPIO_ResetBits(GPIOD, GPIO_Pin_7);}

@@ -6,7 +6,6 @@
 #include <string.h>		
 #include "led.h"  
 #include "systick.h"
-#include "nf/nfv2.h"
 			 
 #define USART4_RxFrameSz	11
 					

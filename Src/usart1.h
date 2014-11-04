@@ -6,11 +6,10 @@
 #include <string.h>		
 #include "led.h"  
 #include "systick.h"
-#include "nf/nfv2.h"
 			 
 #define USART1_RxFrameSz	16
 					
-void USART1_Config(void);
+void USART1_Config(USART_InitTypeDef USART_InitStructure);
 void USART1_TXEN_H(void);
 void USART1_TXEN_L(void);		
 void USART1_SendString(char* buf); 

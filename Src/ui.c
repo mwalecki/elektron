@@ -3,13 +3,16 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "nf/nfv2.h"
 #include "usb.h"
 #include "io.h"
 #include "central.h"
+#include "mb.h"
 
-extern NF_STRUCT_ComBuf 	NFComBuf;
-extern MCENTRAL_St		MCentral;
+extern MODBUS_St ModBus;
+extern MCENTRAL_St		        MCentral;
+extern DEVICE_DIAGNOSTICS_St  DevDiagnostics;
+extern DEVICE_STATE_St        DevState;
+extern DEVICE_CONTROL_St      DevControl;
 
 UI_St ui;
 
@@ -45,7 +48,7 @@ void UI_Config() {
 void UI_LcdPrintAnalogs(void) {
 	char tempBuf[6];
 
-	toVolt(NFComBuf.ReadDeviceVitals.data[0], tempBuf);
+  toVolt(DevDiagnostics.voltageBatt, tempBuf);
 	GLCD_GoTo(LCD_XY_VBATT);
 	GLCD_WriteString(tempBuf);
 
@@ -53,21 +56,21 @@ void UI_LcdPrintAnalogs(void) {
 //	GLCD_GoTo(LCD_XY_V24);
 //	GLCD_WriteStringNegative(tempBuf);
 
-	toVolt(NFComBuf.ReadDeviceVitals.data[2], tempBuf);
+	toVolt(DevDiagnostics.voltage12V, tempBuf);
 	GLCD_GoTo(LCD_XY_V12);
 	GLCD_WriteString(tempBuf);
 
-	toVolt(NFComBuf.ReadDeviceVitals.data[3], tempBuf);
+	toVolt(DevDiagnostics.voltage5V, tempBuf);
 	GLCD_GoTo(LCD_XY_V5);
 	GLCD_WriteString(tempBuf);
 
 	//itoa(NFComBuf.ReadDeviceVitals.data[4]/1000, tempBuf);
-	toVolt(NFComBuf.ReadDeviceVitals.data[4], tempBuf);
+	toVolt(DevDiagnostics.voltagePowerStage1, tempBuf);
 	GLCD_GoTo(LCD_XY_VM1);
 	GLCD_WriteString(tempBuf);
 
 	//itoa(NFComBuf.ReadDeviceVitals.data[5]/1000, tempBuf);
-	toVolt(NFComBuf.ReadDeviceVitals.data[5], tempBuf);
+	toVolt(DevDiagnostics.voltagePowerStage2, tempBuf);
 	GLCD_GoTo(LCD_XY_VM2);
 	GLCD_WriteString(tempBuf);
 }
@@ -82,16 +85,16 @@ void UI_LcdPrintBinaries(void) {
 	MCentral.computerLink ?
 			GLCD_WriteStringNegative("link") : GLCD_WriteString("link");
 	GLCD_GoTo(LCD_XY_O0);
-	(NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) ?
+	(DevControl.digitalOutputs & (1<<0)) ?
 			GLCD_WriteStringNegative("o0") : GLCD_WriteString("o0");
 	GLCD_GoTo(LCD_XY_O1);
-	(NFComBuf.SetDigitalOutputs.data[0] & (1<<1)) ?
+	(DevControl.digitalOutputs & (1<<1)) ?
 			GLCD_WriteStringNegative("o1") : GLCD_WriteString("o1");
 	GLCD_GoTo(LCD_XY_O2);
-	(NFComBuf.SetDigitalOutputs.data[0] & (1<<2)) ?
+	(DevControl.digitalOutputs & (1<<2)) ?
 			GLCD_WriteStringNegative("o2") : GLCD_WriteString("o2");
 	GLCD_GoTo(LCD_XY_O3);
-	(NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) ?
+	(DevControl.digitalOutputs & (1<<3)) ?
 			GLCD_WriteStringNegative("o3") : GLCD_WriteString("o3");
 
 	GLCD_GoTo(LCD_XY_MESSAGE0);
@@ -104,10 +107,10 @@ void UI_LcdPrintBinaries(void) {
 
 
 	GLCD_GoTo(LCD_XY_SM1);
-	(NFComBuf.SetDrivesMode.data[0]) ?
+	(DevControl.mode) ?
 			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
 	GLCD_GoTo(LCD_XY_SM2);
-	(NFComBuf.SetDrivesMode.data[1]) ?
+  (DevControl.mode) ?
 			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
 
 	if(firstRun)
@@ -188,9 +191,9 @@ void UI_KeyboardProc(void)
 
 	for(i = 0; i < KEYS_N; i++)
 	{
-		if((ui.keyHold[i]==0) && ui.keyCnt[i]>=10)
+		if((ui.keyHold[i]==0) && ui.keyCnt[i]>=30)
 			ui.keyCnt[i]=0;
-		else if(ui.keyCnt[i]>=25)
+		else if(ui.keyCnt[i]>=75)
 			ui.keyCnt[i]=0;
 
 		if(ui.keyCnt[i]==5)
@@ -220,34 +223,26 @@ void UI_KeyboardProc(void)
 				{
 					switch(ui.cursorY){
 					case 0:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) != 0){
-							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<0);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<0)) != 0){
+							DevControl.digitalOutputs &= ~(1<<0);
 							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 1:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<1)) != 0){
-							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<1);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<1)) != 0){
+							DevControl.digitalOutputs &= ~(1<<1);
 							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 2:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<2)) != 0){
-							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<2);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<2)) != 0){
+							DevControl.digitalOutputs &= ~(1<<2);
 							UI_SND_DEACTIVATE;
 						}
 						break;
 					case 3:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) != 0){
-							NFComBuf.SetDigitalOutputs.data[0] &= ~(1<<3);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<3)) != 0){
+							DevControl.digitalOutputs &= ~(1<<3);
 							UI_SND_DEACTIVATE;
 						}
 						break;
@@ -260,34 +255,26 @@ void UI_KeyboardProc(void)
 				{
 					switch(ui.cursorY){
 					case 0:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<0)) == 0){
-							NFComBuf.SetDigitalOutputs.data[0] |= (1<<0);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<0)) == 0){
+							DevControl.digitalOutputs |= (1<<0);
 							UI_SND_ACTIVATE;
 						}
 						break;
 					case 1:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<1)) == 0){
-							NFComBuf.SetDigitalOutputs.data[0] |= (1<<1);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<1)) == 0){
+							DevControl.digitalOutputs |= (1<<1);
 							UI_SND_ACTIVATE;
 						}
 						break;
 					case 2:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<2)) == 0){
-							NFComBuf.SetDigitalOutputs.data[0] |= (1<<2);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<2)) == 0){
+							DevControl.digitalOutputs |= (1<<2);
 							UI_SND_ACTIVATE;
 						}
 						break;
 					case 3:
-						if((NFComBuf.SetDigitalOutputs.data[0] & (1<<3)) == 0){
-							NFComBuf.SetDigitalOutputs.data[0] |= (1<<3);
-							NFComBuf.SetDigitalOutputs.updated = 1;
-							NFComBuf.dataReceived = 1;
+						if((DevControl.digitalOutputs & (1<<3)) == 0){
+							DevControl.digitalOutputs |= (1<<3);
 							UI_SND_ACTIVATE;
 						}
 						break;

@@ -36,18 +36,5 @@ void SysTick_Handler(void)
 			STDownCnt[i].tick = 1;
 		}
 	}
-
-	
-//	if(STDownCnt[ST_MotorProc].tick){
-//		MOTOR_Proc();
-//		STDownCnt[ST_MotorProc].tick = 0;
-//	}
-
-
-
-	if(STDownCnt[ST_CommCycle].tick){
-			internalCommunicationCycle();
-		STDownCnt[ST_CommCycle].tick = 0;
-	}
 }
 

@@ -42,6 +42,7 @@ void OUT7_OFF(void);
 void OUT_Config(void);
 void OUT_Set(u8 set);
 void REL_Set(u8 set);
+void OUT_Control(void);
 							
 //##                                      #### ######## ################ OUT functionality:
 

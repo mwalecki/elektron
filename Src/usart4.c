@@ -2,7 +2,6 @@
 
 	 
 extern USART_St		Usart4;
-extern NF_STRUCT_ComBuf 	NFComBuf;
 
 
 
@@ -93,13 +92,13 @@ void UART4_IRQHandler(void)
 		// Clear the USARTx Receive interrupt
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);
 		
-		if(NF_Interpreter(&NFComBuf, Usart4.rxBuf, &Usart4.rxPt, commArray, &commCnt) > 0){
-			NFComBuf.dataReceived = 1;
-
-			if(commCnt > 0){
-				bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart4.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
-				USART4_SendNBytes((char*)Usart4.txBuf+1, bytesToSend);
-			}
-		}
+//		if(NF_Interpreter(&NFComBuf, Usart4.rxBuf, &Usart4.rxPt, commArray, &commCnt) > 0){
+//			NFComBuf.dataReceived = 1;
+//
+//			if(commCnt > 0){
+//				bytesToSend = NF_MakeCommandFrame(&NFComBuf, (uint8_t*)Usart4.txBuf+1, (const uint8_t*)commArray, commCnt, NFComBuf.myAddress);
+//				USART4_SendNBytes((char*)Usart4.txBuf+1, bytesToSend);
+//			}
+//		}
 	}
 }

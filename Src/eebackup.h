@@ -2,18 +2,16 @@
 #define EEBACKUP_H
 
 #include "common.h"
-#include "eeprom.h"
+#include "port.h"
 
-#define EEADDR_MC0_ADDR		1
-#define EEADDR_MC1_ADDR		2
+#define EE_REGIDX_CONFIG_REGS_START MB_HR_ADDR_SerialNumber
+#define EE_REGIDX_CONFIG_REGS_END   (MB_HR_ADDR_MemoryOperation-1)
+#define EE_EEADDR_CONFIG_REGS_START 0
+#define EE_EEADDR_CONFIG_REGS_END 127 // Memory limit for config regs
 
-#define EEADDR_BATT_LOW		10
-#define EEADDR_BATT_CRIT	11
-
-
-
-void eebackup_Recover(void);	
+void eebackup_Recover(void);
 void eebackup_SaveAll(void);
-void eebackup_SaveInitialValues(void);
+void eebackup_Reset(void);
+void eebackup_ResetCommunicationSettings(void);
 
 #endif //EEBACKUP_H

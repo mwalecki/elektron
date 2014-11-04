@@ -1,8 +1,10 @@
 #include "adc.h"
-#include "nf/nfv2.h"
+#include "port.h"
 
 extern ADC_St ADC;
-extern NF_STRUCT_ComBuf 	NFComBuf;
+extern MODBUS_St ModBus;
+extern DEVICE_DIAGNOSTICS_St DevDiagnostics;
+extern DEVICE_STATE_St       DevState;
 
 void ADCwithDMA_Config(void){
 	ADC_InitTypeDef ADC_InitStructure;
@@ -119,12 +121,12 @@ void DMA1_Channel1_IRQHandler(void)
 		 */
 	}
 
-	NFComBuf.ReadDeviceVitals.data[0] = ADC.milivolt[4];
-	NFComBuf.ReadDeviceVitals.data[1] = ADC.milivolt[2];
-	NFComBuf.ReadDeviceVitals.data[2] = ADC.milivolt[1];
-	NFComBuf.ReadDeviceVitals.data[3] = ADC.milivolt[0];
-	NFComBuf.ReadDeviceVitals.data[4] = ADC.milivolt[9];
-	NFComBuf.ReadDeviceVitals.data[5] = ADC.milivolt[10];
+  DevDiagnostics.voltageBatt = ADC.milivolt[4];
+  DevDiagnostics.voltage24V = ADC.milivolt[2];
+  DevDiagnostics.voltage12V = ADC.milivolt[1];
+  DevDiagnostics.voltage5V = ADC.milivolt[0];
+  DevDiagnostics.voltagePowerStage1 = ADC.milivolt[9];
+  DevDiagnostics.voltagePowerStage1 = ADC.milivolt[10];
 
 	DMA_ClearITPendingBit(DMA1_IT_TC1);
 }

@@ -5,17 +5,17 @@
 
 #define ST_StatusLed	0
 #define ST_Period0			5000 // all values in [100us]
-#define ST_UiProc		1
+#define ST_UiProc		  1
 #define ST_Period1			100
 #define ST_EncSpeed		2
 #define ST_Period2			100
-#define ST_UsartCmdTo	3
-#define ST_Period3			2000
-#define ST_UsartTxDelay	4
-#define ST_Period4			10
-#define ST_CommCycle	5
-#define ST_Period5			200
-#define ST_ADC			6
+#define ST_CommandWD	3
+#define ST_Period3			5000
+#define ST_MBHiPrioUpd	4
+#define ST_Period4			1000
+#define ST_MBLowPrioUpd	5
+#define ST_Period5			5000
+#define ST_ADC			  6
 #define ST_Period6			1500
 #define ST_RelaysOff	7
 #define ST_Period7			5000

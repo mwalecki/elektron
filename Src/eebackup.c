@@ -1,38 +1,71 @@
 #include "eebackup.h"
-#include "nf/nfv2.h"
-#include "central.h"
-	 
-extern uint16_t				serialNumber;
-extern NF_STRUCT_ComBuf 	NFComBuf;
-extern MCENTRAL_St			MCentral;
+#include "eeprom.h"
+#include "port.h"
 
-uint8_t MotorControllerAddr0, MotorControllerAddr1, InputOutputAddr0;
+extern MODBUS_St ModBus;
+extern uint32_t        mileage;
+extern DEVICE_CONFIGURATION_St DevConfiguration;
+uint16_t iRegIndex, iEeAddr;
 
 void eebackup_Recover(void)
 {
-	MotorControllerAddr0 = EEPROM_Read(EEADDR_MC0_ADDR);
-	MotorControllerAddr1 = EEPROM_Read(EEADDR_MC1_ADDR);
+//  uint16_t iRegIndex, iEeAddr;
+  iEeAddr = EE_EEADDR_CONFIG_REGS_START;
+  iRegIndex = EE_REGIDX_CONFIG_REGS_START;
 
-	MCentral.batteryVoltageLow = EEPROM_Read(EEADDR_BATT_LOW);
-	MCentral.batteryVoltageCritical = EEPROM_Read(EEADDR_BATT_CRIT);
+  while(1){
+    if((iEeAddr > EE_EEADDR_CONFIG_REGS_END) || (iRegIndex > EE_REGIDX_CONFIG_REGS_END))
+      break;
+    ModBus.usRegHoldingBuf[iRegIndex] = EEPROM_Read(iEeAddr);
+    ModBus.usRegHoldingFlags.dataReceived[iRegIndex] = 1;
+    iEeAddr++;
+    iRegIndex++;
+  }
+  DevConfiguration.mileage =
+      ModBus.usRegHoldingBuf[MB_HR_ADDR_Mileage_L] |
+      ((int32_t)ModBus.usRegHoldingBuf[MB_HR_ADDR_Mileage_H] << 16);
 
-
-//	NFComBuf.SetDrivesSpeed.addr[0] =
-//		(((uint32_t)EEPROM_Read(EEADDR_DRV1_MIN_H)) << 16 ) | EEPROM_Read(EEADDR_DRV1_MIN_L);
+  if(DevConfiguration.mileage == 0xffffffff){
+    eebackup_ResetCommunicationSettings();
+  }
+  ModBus.usRegHoldingFlags.dataReceivedGlobal = 1;
 }
 
 void eebackup_SaveAll(void)
 {
-	EEPROM_Write(EEADDR_MC0_ADDR, (u16) MotorControllerAddr0);
-	EEPROM_Write(EEADDR_MC1_ADDR, (u16) MotorControllerAddr1);
+//  uint16_t iRegIndex, iEeAddr;
+  iEeAddr = EE_EEADDR_CONFIG_REGS_START;
+  iRegIndex = EE_REGIDX_CONFIG_REGS_START;
 
-	EEPROM_Write(EEADDR_BATT_LOW, (u16) MCentral.batteryVoltageLow);
-	EEPROM_Write(EEADDR_BATT_CRIT, (u16) MCentral.batteryVoltageCritical);
+  DevConfiguration.mileage++;
+  ModBus.usRegHoldingBuf[MB_HR_ADDR_Mileage_L] = (DevConfiguration.mileage & 0xffff);
+  ModBus.usRegHoldingBuf[MB_HR_ADDR_Mileage_H] = ((DevConfiguration.mileage >> 16) & 0xffff);
 
-//	EEPROM_Write(EEADDR_DRV1_MIN_L, (u16) (NFComBuf.SetDrivesMinPosition.data[0] & 0x0000ffff));
+  while(1){
+    if((iEeAddr > EE_EEADDR_CONFIG_REGS_END) || (iRegIndex > EE_REGIDX_CONFIG_REGS_END))
+      break;
+    EEPROM_Write(iEeAddr, (u16) ModBus.usRegHoldingBuf[iRegIndex]);
+    iEeAddr++;
+    iRegIndex++;
+  }
 }
 
-void eebackup_SaveInitialValues(void)
+void eebackup_Reset(void)
 {
+  uint16_t iRegIndex;
+  iRegIndex = EE_REGIDX_CONFIG_REGS_START;
+
+  while(1){
+    if(iRegIndex > EE_REGIDX_CONFIG_REGS_END)
+      break;
+    ModBus.usRegHoldingBuf[iRegIndex] = 0;
+    iRegIndex++;
+  }
 }
 
+void eebackup_ResetCommunicationSettings(void){
+  DevConfiguration.serialInterfaceBitrate = SERIAL_DEF_BITRATE;
+  ModBus.usRegHoldingBuf[MB_HR_ADDR_SerialInterfaceBitrate_L] = (DevConfiguration.serialInterfaceBitrate & 0xffff);
+  ModBus.usRegHoldingBuf[MB_HR_ADDR_SerialInterfaceBitrate_H] = ((DevConfiguration.serialInterfaceBitrate >> 16) & 0xffff);
+  eebackup_SaveAll();
+}
