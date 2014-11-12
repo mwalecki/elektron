@@ -10,6 +10,7 @@
 
 extern MODBUS_St ModBus;
 extern MCENTRAL_St		        MCentral;
+extern DEVICE_CONFIGURATION_St  DevConfiguration;
 extern DEVICE_DIAGNOSTICS_St  DevDiagnostics;
 extern DEVICE_STATE_St        DevState;
 extern DEVICE_CONTROL_St      DevControl;
@@ -34,8 +35,8 @@ void UI_Config() {
 	GLCD_GoTo(0, 0);GLCD_WriteString("Bt --.-V   usb    o0 ");
 	GLCD_GoTo(0, 1);GLCD_WriteString("12 --.-V   link   o1 ");
 	GLCD_GoTo(0, 2);GLCD_WriteString("05 --.-V          o2 ");
-	GLCD_GoTo(0, 3);GLCD_WriteString("M1 --.-V --C ---  o3 ");
-	GLCD_GoTo(0, 4);GLCD_WriteString("M2 --.-V --C ---     ");
+	GLCD_GoTo(0, 3);GLCD_WriteString("M1 --.-V bitrate  o3 ");
+	GLCD_GoTo(0, 4);GLCD_WriteString("M2 --.-V             ");
 	GLCD_GoTo(0, 5);GLCD_WriteString("                     ");
 	GLCD_GoTo(0, 6);GLCD_WriteString("                     ");
 	GLCD_GoTo(0, 7);GLCD_WriteString("+-------------------+");
@@ -48,9 +49,13 @@ void UI_Config() {
 void UI_LcdPrintAnalogs(void) {
 	char tempBuf[6];
 
+  itoa(DevConfiguration.serialInterfaceBitrate, tempBuf);
+  GLCD_GoTo(LCD_XY_BITRATE);
+  GLCD_WriteString(tempBuf);
+
   toVolt(DevDiagnostics.voltageBatt, tempBuf);
-	GLCD_GoTo(LCD_XY_VBATT);
-	GLCD_WriteString(tempBuf);
+  GLCD_GoTo(LCD_XY_VBATT);
+  GLCD_WriteString(tempBuf);
 
 //	toVolt(ADC.milivolt[2], tempBuf);
 //	GLCD_GoTo(LCD_XY_V24);
@@ -105,13 +110,9 @@ void UI_LcdPrintBinaries(void) {
 			GLCD_WriteStringNegative("shutting down") : GLCD_WriteString("             ");
 
 
-
-	GLCD_GoTo(LCD_XY_SM1);
+	GLCD_GoTo(LCD_XY_PS);
 	(DevControl.mode) ?
-			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
-	GLCD_GoTo(LCD_XY_SM2);
-  (DevControl.mode) ?
-			GLCD_WriteStringNegative("on ") : GLCD_WriteString("off");
+			GLCD_WriteStringNegative("PS") : GLCD_WriteString("PS");
 
 	if(firstRun)
 		firstRun = 0;
@@ -141,6 +142,7 @@ void UI_KeyboardProc(void)
 {
 	uint16_t keyPort;
 	uint8_t i;
+	uint8_t resetCombinationPressed = 1;
 
 	keyPort = GPIO_ReadInputData(KEY_Port);
 	ui.keyPressed[KEY_Up] = ((keyPort & KEY_Up_Pin) == 0);
@@ -149,45 +151,56 @@ void UI_KeyboardProc(void)
 	ui.keyPressed[KEY_Right] = ((keyPort & KEY_Right_Pin) == 0);
 	ui.keyPressed[KEY_Off] = ((keyPort & KEY_Off_Pin) == 0);
 
-	if(ui.keyPressed[KEY_Up] && !ui.keyPressed[KEY_Down])
-		ui.keyCnt[KEY_Up]++;
-	else
-	{
-		ui.keyCnt[KEY_Up] = 0;
-		ui.keyHold[KEY_Up] = 2;
-	}
+  if(    ui.keyPressed[KEY_Up]
+        && ui.keyPressed[KEY_Down]
+        && ui.keyPressed[KEY_Left]
+        && ui.keyPressed[KEY_Right]){
+    ui.keyCnt[KEY_Up]++;
+    ui.keyCnt[KEY_Down]++;
+    ui.keyCnt[KEY_Left]++;
+    ui.keyCnt[KEY_Right]++;
+  }
+  else {
+    if(ui.keyPressed[KEY_Up] && !ui.keyPressed[KEY_Down])
+      ui.keyCnt[KEY_Up]++;
+    else
+    {
+      ui.keyCnt[KEY_Up] = 0;
+      ui.keyHold[KEY_Up] = 2;
+    }
 
-	if(ui.keyPressed[KEY_Down] && !ui.keyPressed[KEY_Up])
-		ui.keyCnt[KEY_Down]++;
-	else
-	{
-		ui.keyCnt[KEY_Down] = 0;
-		ui.keyHold[KEY_Down] = 2;
-	}
+    if(ui.keyPressed[KEY_Down] && !ui.keyPressed[KEY_Up])
+      ui.keyCnt[KEY_Down]++;
+    else
+    {
+      ui.keyCnt[KEY_Down] = 0;
+      ui.keyHold[KEY_Down] = 2;
+    }
 
-	if(ui.keyPressed[KEY_Left] && !ui.keyPressed[KEY_Right])
-		ui.keyCnt[KEY_Left]++;
-	else
-	{
-		ui.keyCnt[KEY_Left] = 0;
-		ui.keyHold[KEY_Left] = 2;
-	}
+    if(ui.keyPressed[KEY_Left] && !ui.keyPressed[KEY_Right])
+      ui.keyCnt[KEY_Left]++;
+    else
+    {
+      ui.keyCnt[KEY_Left] = 0;
+      ui.keyHold[KEY_Left] = 2;
+    }
 
-	if(ui.keyPressed[KEY_Right] && !ui.keyPressed[KEY_Left])
-		ui.keyCnt[KEY_Right]++;
-	else
-	{
-		ui.keyCnt[KEY_Right] = 0;
-		ui.keyHold[KEY_Right] = 2;
-	}
+    if(ui.keyPressed[KEY_Right] && !ui.keyPressed[KEY_Left])
+      ui.keyCnt[KEY_Right]++;
+    else
+    {
+      ui.keyCnt[KEY_Right] = 0;
+      ui.keyHold[KEY_Right] = 2;
+    }
 
-	if(ui.keyPressed[KEY_Off])
-		ui.keyCnt[KEY_Off]++;
-	else
-	{
-		ui.keyCnt[KEY_Off] = 0;
-		ui.keyHold[KEY_Off] = 2;
-	}
+    if(ui.keyPressed[KEY_Off])
+      ui.keyCnt[KEY_Off]++;
+    else
+    {
+      ui.keyCnt[KEY_Off] = 0;
+      ui.keyHold[KEY_Off] = 2;
+    }
+  }
 
 	for(i = 0; i < KEYS_N; i++)
 	{
@@ -287,6 +300,19 @@ void UI_KeyboardProc(void)
 				break;
 			}
 		}
+	}
+	if(    ui.keyHold[KEY_Left] == 0
+	    && ui.keyHold[KEY_Right] == 0
+	    && ui.keyHold[KEY_Up] == 0
+	    && ui.keyHold[KEY_Down] == 0){
+	  UI_SND_WARNING;
+	  eebackup_ResetCommunicationSettings();
+	  eebackup_SaveAll();
+
+    ui.keyHold[KEY_Left] = 2;
+    ui.keyHold[KEY_Right] = 2;
+    ui.keyHold[KEY_Up] = 2;
+    ui.keyHold[KEY_Down] = 2;
 	}
 }
 

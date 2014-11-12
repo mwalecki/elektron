@@ -161,7 +161,7 @@ typedef struct{
 } MODBUS_St;
 
 /* ----------------------- Prototypes ---------------------------------------*/
-void MODBUS_Config(uint8_t addr);
+void MODBUS_Config(uint8_t addr, uint32_t bitrate);
 void            vMBPortEnterCritical( void );
 void            vMBPortExitCritical( void );
 void  eMBSynchronizeFromHoldingRegs( void );

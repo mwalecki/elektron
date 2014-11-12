@@ -25,7 +25,7 @@ extern DEVICE_CONTROL_St       DevControl;
 extern DEVICE_CONFIGURATION_St DevConfiguration;
 extern STDOWNCNT_St STDownCnt[ST_Downcounters];
 
-void MODBUS_Config(uint8_t addr){
+void MODBUS_Config(uint8_t addr, uint32_t bitrate){
     eMBErrorCode    eStatus;
 	const UCHAR     ucSlaveID[] = { 0xAA, 0xBB, 0xCC };
 
@@ -34,7 +34,7 @@ void MODBUS_Config(uint8_t addr){
     ModBus.usRegHoldingFlags.dataReceivedGlobal = 0;
 
 	//if( MB_ENOERR != ( eStatus = eMBInit( MB_RTU, addr, 2, 38400, MB_PAR_NONE) ) )
-	if( MB_ENOERR != ( eStatus = eMBInit( MB_RTU, addr, 2, 115200, MB_PAR_NONE) ) )
+	if( MB_ENOERR != ( eStatus = eMBInit( MB_RTU, addr, 2, bitrate, MB_PAR_NONE) ) )
 	{
 		/* Can not initialize. Add error handling code here. */
 		while(1){

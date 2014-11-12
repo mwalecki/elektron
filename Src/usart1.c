@@ -53,6 +53,8 @@ void USART1_Config(USART_InitTypeDef USART_InitStructure){
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 //	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
+  /* Enable the USART OverSampling by 8 */
+  USART_OverSampling8Cmd(UART4, ENABLE);
 	// USART1 Init
 	USART_Init(USART1, &USART_InitStructure);
 

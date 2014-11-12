@@ -23,13 +23,15 @@
 #define LCD_XY_O0		18*6,0
 #define LCD_XY_O1		18*6,1
 #define LCD_XY_O2		18*6,2
-#define LCD_XY_O3		18*6,3
+#define LCD_XY_O3   18*6,3
+#define LCD_XY_PS   18*6,4
 #define LCD_XY_CUR0		20*6,0
 #define LCD_XY_CUR1		20*6,1
 #define LCD_XY_CUR2		20*6,2
 #define LCD_XY_CUR3		20*6,3
 #define LCD_XY_MESSAGE0	0*6,5
-#define LCD_XY_MESSAGE1	0*6,6
+#define LCD_XY_MESSAGE1 0*6,6
+#define LCD_XY_BITRATE  9*6,4
 
 #define KEY_Up		0
 #define KEY_Down	1

@@ -1,38 +1,38 @@
 <!DOCTYPE VersaBoxXML>
-<ModBusSoft data_bits="8" baud="115200" parity="N" stop_bits="2">
-    <Slave holdUpPeriod="500" address="1" description="1106">
-        <RegisterSet autoreadPeriod="100" name="Diagnostics">
-            <Register access="R" widget="set" default="0" type="int16_t" content="" value="0" address="0" description="Device Info"/>
-            <Register access="R" widget="set" default="0" type="int16_t" content="" value="0" address="1" description="Device Info"/>
-            <Register access="R" widget="flag" default="0" type="uint16_t" value="0" address="2" f0="T-tt" description="Device Status"/>
-            <Register mult="1" access="R" unit="mV" widget="cont" default="0" type="uint16_t" value="0" address="3" max="60000" min="0" description="Voltage 5V"/>
-            <Register mult="1" access="R" unit="mV" widget="cont" default="0" type="uint16_t" value="0" address="4" max="60000" min="0" description="Voltage 12V"/>
-            <Register mult="1" access="R" unit="mV" widget="cont" default="0" type="uint16_t" value="0" address="5" max="60000" min="0" description="Voltage 24V"/>
-            <Register mult="1" access="R" unit="mV" widget="cont" default="0" type="uint16_t" value="0" address="6" max="60000" min="0" description="Voltage Power Stage1"/>
-            <Register mult="1" access="R" unit="mV" widget="cont" default="0" type="uint16_t" value="0" address="7" max="60000" min="0" description="Voltage Power Stage2"/>
+<ModBusSoft data_bits="8" parity="N" baud="115200" stop_bits="2">
+    <Slave description="1106" address="1" holdUpPeriod="500">
+        <RegisterSet name="Diagnostics" autoreadPeriod="100">
+            <Register type="int16_t" value="0" widget="set" description="Device Info" default="0" content="" address="0" access="R"/>
+            <Register type="int16_t" value="0" widget="set" description="Device Info" default="0" content="" address="1" access="R"/>
+            <Register type="uint16_t" value="0" widget="flag" description="Device Status" default="0" f0="T-tt" address="2" access="R"/>
+            <Register type="uint16_t" value="0" widget="cont" description="Voltage 5V" max="60000" min="0" default="0" mult="1" unit="mV" address="3" access="R"/>
+            <Register type="uint16_t" value="0" widget="cont" description="Voltage 12V" max="60000" min="0" default="0" mult="1" unit="mV" address="4" access="R"/>
+            <Register type="uint16_t" value="0" widget="cont" description="Voltage 24V" max="60000" min="0" default="0" mult="1" unit="mV" address="5" access="R"/>
+            <Register type="uint16_t" value="0" widget="cont" description="Voltage Power Stage1" max="60000" min="0" default="0" mult="1" unit="mV" address="6" access="R"/>
+            <Register type="uint16_t" value="0" widget="cont" description="Voltage Power Stage2" max="60000" min="0" default="0" mult="1" unit="mV" address="7" access="R"/>
         </RegisterSet>
-        <RegisterSet autoreadPeriod="100" autoread="autoread" name="State">
-            <Register access="R" widget="flag" default="0" type="uint16_t" address="13" f15="Err-Error" value="0" description="Status[L]"/>
-            <Register access="R" widget="flag" default="0" type="uint16_t" address="14" f15="Err-Error" value="0" description="Status[H]"/>
-            <Register access="R" widget="flag" default="0" type="uint16_t" value="0" address="15" description="Digital Inputs"/>
+        <RegisterSet autoread="autoread" name="State" autoreadPeriod="100">
+            <Register type="uint16_t" value="0" widget="flag" description="Status[L]" f15="Err-Error" default="0" address="13" access="R"/>
+            <Register type="uint16_t" value="0" widget="flag" description="Status[H]" f15="Err-Error" default="0" address="14" access="R"/>
+            <Register type="uint16_t" value="0" widget="flag" description="Digital Inputs" default="0" address="15" access="R"/>
         </RegisterSet>
-        <RegisterSet immediateWrite="immediateWrite" autoreadPeriod="100" autoread="autoread" enterWrite="enterWrite" name="Control">
-            <Register access="RW" widget="flag" default="0" type="int16_t" value="0" address="19" f0="RST-Reset Error Flags" description="Reset Error Flags"/>
-            <Register access="RW" stop="0" widget="set" default="0" type="uint16_t" content="0-IDLE (STOP);1-IDLE (Delayed STOP);2-VELOCITY;3-CURRENT;4-POSITION;5-PWM;6-PVT;7-POS_INCREMENT;18-HOMING" value="0" address="20" description="Drive Mode"/>
-            <Register access="RW" widget="flag" default="0" type="uint16_t" value="0" address="21" f0="PO0-Power Output 0" f1="PO1-Power Output 1" f2="PO2-Power Output 2" f3="PO3-Power Output 3" f7="OFF-Robot Poweroff" description="Set Digital Outputs"/>
+        <RegisterSet autoread="autoread" name="Control" immediateWrite="immediateWrite" enterWrite="enterWrite" autoreadPeriod="100">
+            <Register type="int16_t" value="0" widget="flag" description="Reset Error Flags" default="0" f0="RST-Reset Error Flags" address="19" access="RW"/>
+            <Register type="uint16_t" value="0" widget="set" description="Drive Mode" default="0" content="0-IDLE (STOP);1-IDLE (Delayed STOP);2-VELOCITY;3-CURRENT;4-POSITION;5-PWM;6-PVT;7-POS_INCREMENT;18-HOMING" address="20" stop="0" access="RW"/>
+            <Register type="uint16_t" value="0" widget="flag" f7="OFF-Robot Poweroff" description="Set Digital Outputs" default="0" f0="PO0-Power Output 0" f1="PO1-Power Output 1" f2="PO2-Power Output 2" address="21" f3="PO3-Power Output 3" access="RW"/>
         </RegisterSet>
-        <RegisterSet immediateWrite="immediateWrite" autoreadPeriod="100" autoread="autoread" enterWrite="enterWrite" name="Configuration">
-            <Register mult="1" access="RW" unit="-" widget="typed" default="0" type="uint16_t" value="0" address="27" max="65535" min="0" description="Serial Number"/>
-            <Register unit="ms" mult="100" access="RW" widget="typed" type="uint16_t" address="28" value="0" min="0" max="65535" description="Data Link Timeout"/>
-            <Register access="RW" widget="flag" default="0" type="int16_t" value="0" address="29" f0="DLTO-Data Link Timeout" f1="MD0-Mode STOP 0" f2="MD1-Mode Smooth Stop 1" description="Motor Instant Poweroff Source"/>
-            <Register access="RW" widget="flag" default="0" type="int16_t" value="0" address="30" f0="DLTO-Data Link Timeout" f1="MD0-Mode STOP 0" f2="MD1-Mode Smooth Stop 1" description="Motor Delayed Poweroff Source"/>
-            <Register unit="ms" mult="100" access="RW" widget="typed" type="uint16_t" address="31" value="0" min="0" max="65535" description="Motor Poweroff Delay"/>
-            <Register unit="mV" mult="1" access="RW" widget="typed" type="uint16_t" address="32" value="0" min="0" max="65535" description="Battery Voltage Low"/>
-            <Register unit="mV" mult="1" access="RW" widget="typed" type="uint16_t" address="33" value="0" min="0" max="65535" description="Battery Voltage Critical"/>
-            <Register unit="ms" mult="100" access="RW" widget="typed" type="uint16_t" address="34" value="0" min="0" max="65535" description="Shutdown Delay"/>
-            <Register mult="1" access="RW" unit="-" widget="typed" default="0" type="int32_t" value="0" address="41" max="921600" min="9600" description="Serial Interface Bitrate"/>
-            <Register mult="1" access="R" unit="writes" widget="typed" default="0" type="int32_t" value="0" address="41" max="2147483647" min="-2147483648" description="Mileage"/>
-            <Register access="RW" widget="flag" default="0" type="int16_t" value="0" address="43" f0="Sto-Store Configuration" f1="Rec-Recall Configuration" f2="Res-Reset Configuration" description="Memory Operation"/>
+        <RegisterSet autoread="autoread" name="Configuration" immediateWrite="immediateWrite" enterWrite="enterWrite" autoreadPeriod="100">
+            <Register type="uint16_t" value="0" widget="typed" description="Serial Number" max="65535" min="0" default="0" mult="1" unit="-" address="27" access="RW"/>
+            <Register type="uint16_t" value="5" widget="typed" description="Data Link Timeout" max="65535" min="0" default="0" mult="100" unit="ms" address="28" access="RW"/>
+            <Register type="int16_t" value="0" widget="flag" description="Motor Instant Poweroff Source" default="0" f0="DLTO-Data Link Timeout" f1="MD0-Mode STOP 0" f2="MD1-Mode Smooth Stop 1" address="29" access="RW"/>
+            <Register type="int16_t" value="0" widget="flag" description="Motor Delayed Poweroff Source" default="0" f0="DLTO-Data Link Timeout" f1="MD0-Mode STOP 0" f2="MD1-Mode Smooth Stop 1" address="30" access="RW"/>
+            <Register type="uint16_t" value="15" widget="typed" description="Motor Poweroff Delay" max="65535" min="0" default="0" mult="100" unit="ms" address="31" access="RW"/>
+            <Register type="uint16_t" value="0" widget="typed" description="Battery Voltage Low" max="65535" min="0" default="0" mult="1" unit="mV" address="32" access="RW"/>
+            <Register type="uint16_t" value="0" widget="typed" description="Battery Voltage Critical" max="65535" min="0" default="0" mult="1" unit="mV" address="33" access="RW"/>
+            <Register type="uint16_t" value="0" widget="typed" description="Shutdown Delay" max="65535" min="0" default="0" mult="100" unit="ms" address="34" access="RW"/>
+            <Register type="int32_t" value="115200" widget="typed" description="Serial Interface Bitrate" max="921600" min="9600" default="0" mult="1" unit="-" address="39" access="RW"/>
+            <Register type="int32_t" value="11" widget="typed" description="Mileage" max="2147483647" min="-2147483648" default="0" mult="1" unit="writes" address="41" access="R"/>
+            <Register type="int16_t" value="0" widget="flag" description="Memory Operation" default="0" f0="Sto-Store Configuration" f1="Rec-Recall Configuration" f2="Res-Reset Configuration" address="43" access="RW"/>
         </RegisterSet>
     </Slave>
 </ModBusSoft>

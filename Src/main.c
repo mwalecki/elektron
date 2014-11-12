@@ -66,7 +66,7 @@ int main(void)
 //	USART4_Config();
 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  MODBUS_Config( 0x01 );
+  MODBUS_Config( 0x01 , DevConfiguration.serialInterfaceBitrate);
 
   NVIC_Configuration();
 	
@@ -78,6 +78,8 @@ int main(void)
 			1<<0);	//blink
 
 	SYSTICK_Init(STDownCnt);
+
+	USART1_SendString("Test\r\n");
 
   //#### MAIN LOOP ####//
 	while (1){
