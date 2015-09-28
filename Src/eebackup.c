@@ -5,11 +5,10 @@
 extern MODBUS_St ModBus;
 extern uint32_t        mileage;
 extern DEVICE_CONFIGURATION_St DevConfiguration;
-uint16_t iRegIndex, iEeAddr;
 
 void eebackup_Recover(void)
 {
-//  uint16_t iRegIndex, iEeAddr;
+  uint16_t iRegIndex, iEeAddr;
   iEeAddr = EE_EEADDR_CONFIG_REGS_START;
   iRegIndex = EE_REGIDX_CONFIG_REGS_START;
 
@@ -33,7 +32,7 @@ void eebackup_Recover(void)
 
 void eebackup_SaveAll(void)
 {
-//  uint16_t iRegIndex, iEeAddr;
+  uint16_t iRegIndex, iEeAddr;
   iEeAddr = EE_EEADDR_CONFIG_REGS_START;
   iRegIndex = EE_REGIDX_CONFIG_REGS_START;
 

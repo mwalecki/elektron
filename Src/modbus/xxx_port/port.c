@@ -164,11 +164,26 @@ eMBSynchronizeFromHoldingRegs( void )
       case MB_HR_ADDR_DigitalOutputs:
         DevControl.digitalOutputs = ModBus.usRegHoldingBuf[MB_HR_ADDR_DigitalOutputs];
         break;
+      case MB_HR_ADDR_PowerOptions:
+        DevControl.power_options = ModBus.usRegHoldingBuf[MB_HR_ADDR_PowerOptions];
+        break;
+      case MB_HR_ADDR_SerialNumber:
+        DevConfiguration.serialNumber = ModBus.usRegHoldingBuf[MB_HR_ADDR_SerialNumber];
+        break;
       case MB_HR_ADDR_DataLinkTimeout:
         STDownCnt[ST_CommandWD].period = ModBus.usRegHoldingBuf[MB_HR_ADDR_DataLinkTimeout] *1000; // 100ms->100us
         break;
       case MB_HR_ADDR_MotorPoweroffDelay:
         DevConfiguration.MotorPoweroffDelay = ModBus.usRegHoldingBuf[MB_HR_ADDR_MotorPoweroffDelay]; // [100ms]
+        break;
+      case MB_HR_ADDR_BatteryVoltageLow:
+        MCentral.batteryVoltageLow = ModBus.usRegHoldingBuf[MB_HR_ADDR_BatteryVoltageLow]; // [mV]
+        break;
+      case MB_HR_ADDR_BatteryVoltageCritical:
+        MCentral.batteryVoltageCritical = ModBus.usRegHoldingBuf[MB_HR_ADDR_BatteryVoltageCritical]; // [mV]
+        break;
+      case MB_HR_ADDR_ShutdownDelay:
+        MCentral.shutDownDelay = ModBus.usRegHoldingBuf[MB_HR_ADDR_ShutdownDelay]; // [s]
         break;
       case MB_HR_ADDR_SerialInterfaceBitrate_L:
         DevConfiguration.serialInterfaceBitrate =

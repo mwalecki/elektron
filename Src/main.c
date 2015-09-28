@@ -61,6 +61,7 @@ int main(void)
 	LED_Config();
 	UI_Config();
 	OUT_Config();
+	IN_Config();
 	ADCwithDMA_Config();
 //	USART1_Config();
 //	USART4_Config();
@@ -104,8 +105,10 @@ int main(void)
 
 		if(STDownCnt[ST_StatusLed].tick){
 			LED_Proc();
+#ifdef LCD_ON
 			UI_LcdPrintAnalogs();
       UI_LcdPrintBinaries();
+#endif
 			STDownCnt[ST_StatusLed].tick = 0;
 		}		   
 		if(STDownCnt[ST_CommandWD].tick){

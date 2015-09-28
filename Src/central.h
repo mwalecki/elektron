@@ -23,6 +23,7 @@ typedef struct{
 	uint16_t batteryWarnCounter;
   uint16_t shutdownCounter;
   uint16_t PSOffCounter;
+  uint16_t shutDownDelay;
 } MCENTRAL_St;
 
 void modeControl();

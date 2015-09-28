@@ -8,6 +8,8 @@
 #ifndef KS0108_STM32_H_
 #define KS0108_STM32_H_
 
+#define BUSY_TIMEOUT 5
+
 void GLCD_Delay(void);
 void GLCD_EnableController(unsigned char controller);
 void GLCD_DisableController(unsigned char controller);

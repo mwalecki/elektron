@@ -10,7 +10,7 @@
 #define ST_EncSpeed		2
 #define ST_Period2			100
 #define ST_CommandWD	3
-#define ST_Period3			5000
+#define ST_Period3			0
 #define ST_MBHiPrioUpd	4
 #define ST_Period4			1000
 #define ST_MBLowPrioUpd	5

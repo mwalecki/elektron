@@ -15,6 +15,8 @@
 #define SERIAL_DEF_BITRATE  115200
 #define SERIAL_DEF_ADDRESS  1
 
+#define LCD_ON
+
 typedef struct{
 	vu8 blink;
 	vu8 blinkPhase;
@@ -47,6 +49,7 @@ typedef struct{
 typedef struct{
   uint16_t mode;
   uint16_t digitalOutputs;
+  uint16_t power_options;
 } DEVICE_CONTROL_St;
 
 typedef struct{

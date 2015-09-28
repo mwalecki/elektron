@@ -106,7 +106,7 @@ void UI_LcdPrintBinaries(void) {
 	(MCentral.batteryLow) ?
 			GLCD_WriteStringNegative(" battery low ") : GLCD_WriteString("             ");
 	GLCD_GoTo(LCD_XY_MESSAGE1);
-	(MCentral.batteryCritical) ?
+	(MCentral.shutdownCounter) ?
 			GLCD_WriteStringNegative("shutting down") : GLCD_WriteString("             ");
 
 

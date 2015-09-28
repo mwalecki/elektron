@@ -68,3 +68,25 @@ void OUT_Control(void){
   ((outputs & (1<<3)) ? REL4_ON() : REL4_OFF());
   ((outputs & (1<<7)) ? R_OFF_H() : R_OFF_L());
 }
+
+void IO_PinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode){
+  GPIO_InitTypeDef GPIO_InitStructure;
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode;
+  GPIO_Init(GPIOx, &GPIO_InitStructure);
+}
+
+void IN_Config(void){
+  // IO Clocks Enable
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+  IO_PinConfig(GPIOA, GPIO_Pin_9, GPIO_Speed_10MHz, GPIO_Mode_IPD); // USB Vin
+}
+
+uint8_t IN_ReadUsbVIn(void){
+  return GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_9);
+}
+
+

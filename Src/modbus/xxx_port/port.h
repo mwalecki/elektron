@@ -52,6 +52,7 @@
 #define MB_HR_RANGE_Control				( 1<<2 )
 #define MB_HR_RANGE_Config				( 1<<3 )
 
+// Diagnostics
 #define MB_HR_ADDR_DeviceInfo_L 0x01
 #define MB_HR_ADDR_DeviceInfo_H 0x02
 #define MB_HR_ADDR_DeviceStatus 0x03
@@ -76,7 +77,7 @@
 #define MB_HR_ADDR_ResetErrorFlags  0x14
 #define MB_HR_ADDR_DrivesMode 0x15
 #define MB_HR_ADDR_DigitalOutputs 0x16
-#define MB_HR_ADDR_Reserved17 0x17
+#define MB_HR_ADDR_PowerOptions 0x17
 #define MB_HR_ADDR_Reserved18 0x18
 #define MB_HR_ADDR_Reserved19 0x19
 #define MB_HR_ADDR_Reserved1a 0x1a
@@ -105,8 +106,15 @@
 #define MB_HR_Memory_RecallConfiguration  (1<<1)
 #define MB_HR_Memory_ResetConfiguration (1<<2)
 
+#define MB_HR_PowerOptions_ShutDownNow  (1<<0)
+#define MB_HR_PowerOptions_ShutDownAfterDelay (1<<1)
+#define MB_HR_PowerOptions_ShutDownOnUsbDisconnect  (1<<2)
+
+
+
 // The end of memory map
 // #####################
+
 
 
 

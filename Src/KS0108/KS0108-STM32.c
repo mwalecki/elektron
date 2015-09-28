@@ -93,7 +93,8 @@ return status;
 //-------------------------------------------------------------------------------------------------
 void GLCD_WriteCommand(unsigned char commandToWrite, unsigned char controller)
 {
-while(GLCD_ReadStatus(controller)&DISPLAY_STATUS_BUSY);
+volatile int16_t timeout = BUSY_TIMEOUT;
+while((GLCD_ReadStatus(controller)&DISPLAY_STATUS_BUSY) && (timeout--));
 //GPIO_StructInit(&GPIO_InitStructure);
 //GPIO_InitStructure.GPIO_Pin  = (0xFF << KS0108_D0);
 //GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -123,7 +124,8 @@ GLCD_DisableController(controller);
 unsigned char GLCD_ReadData(void)
 {
 unsigned char tmp;
-while(GLCD_ReadStatus(screen_x / 64)&DISPLAY_STATUS_BUSY);
+volatile int16_t timeout = BUSY_TIMEOUT;
+while((GLCD_ReadStatus(screen_x / 64)&DISPLAY_STATUS_BUSY) && (timeout--));
 //GPIO_StructInit(&GPIO_InitStructure);
 //GPIO_InitStructure.GPIO_Pin = 0xFF << KS0108_D0;
 //GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -148,7 +150,8 @@ return tmp;
 //-------------------------------------------------------------------------------------------------
 void GLCD_WriteData(unsigned char dataToWrite)
 {
-while(GLCD_ReadStatus(screen_x / 64)&DISPLAY_STATUS_BUSY);
+volatile int16_t timeout = BUSY_TIMEOUT;
+while((GLCD_ReadStatus(screen_x / 64)&DISPLAY_STATUS_BUSY) && (timeout--));
    
 //GPIO_StructInit(&GPIO_InitStructure);
 //GPIO_InitStructure.GPIO_Pin = (0xFF << KS0108_D0);

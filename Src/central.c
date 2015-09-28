@@ -67,10 +67,7 @@ void systemMonitor(void){
 	// Battery Critical
 	if(MCentral.batteryCritical){
 		if(MCentral.shutdownCounter == 0)
-			systemShutDown(BATT_CRIT_SHUTDOWN_T);
-	}
-	else{
-		systemShutDown(0);
+			systemShutDown(MCentral.shutDownDelay);
 	}
 
 
@@ -99,5 +96,27 @@ void systemMonitor(void){
     if(MCentral.PSOffCounter == 0) {
       PS_EN_L();
     }
+  }
+
+  // Remote Shut Down
+  if(DevControl.power_options & MB_HR_PowerOptions_ShutDownNow){
+    R_OFF_H();
+  }
+
+  // Remote Shut Down on USB Disconnect
+  if(DevControl.power_options & MB_HR_PowerOptions_ShutDownOnUsbDisconnect){
+    if(! IN_ReadUsbVIn())
+      R_OFF_H();
+  }
+
+  // Remote Shut Down with Delay
+  if(DevControl.power_options & MB_HR_PowerOptions_ShutDownAfterDelay){
+    if(MCentral.shutdownCounter == 0)
+      systemShutDown(MCentral.shutDownDelay);
+  }
+
+  // System Shut Down Call Off
+  if(! ((MCentral.batteryCritical) || (DevControl.power_options & MB_HR_PowerOptions_ShutDownAfterDelay))){
+    systemShutDown(0);
   }
 }
