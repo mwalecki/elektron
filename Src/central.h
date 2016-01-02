@@ -18,6 +18,7 @@ typedef struct{
 	u8	shuttingDown	:1;
 	u8	batteryLow		:1;
 	u8	batteryCritical	:1;
+	u8  userShutDown : 1;
 	int16_t batteryVoltageLow;
 	int16_t batteryVoltageCritical;
 	uint16_t batteryWarnCounter;

@@ -110,6 +110,10 @@
 #define MB_HR_PowerOptions_ShutDownAfterDelay (1<<1)
 #define MB_HR_PowerOptions_ShutDownOnUsbDisconnect  (1<<2)
 
+#define MB_HR_Status_L_PowerOffPressed  (1<<0)
+#define MB_HR_Status_L_ShuttingDown (1<<1)
+#define MB_HR_Status_L_CommunicationTimeout (1<<2)
+
 
 
 // The end of memory map

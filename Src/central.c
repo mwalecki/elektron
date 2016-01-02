@@ -12,6 +12,7 @@ extern MCENTRAL_St		MCentral;
 extern USART_St			Usart1;
 extern ADC_St        ADC;
 extern MODBUS_St       ModBus;
+extern DEVICE_STATE_St     DevState;
 																				 
 void modeControl(){
   static uint16_t mode;
@@ -119,4 +120,9 @@ void systemMonitor(void){
   if(! ((MCentral.batteryCritical) || (DevControl.power_options & MB_HR_PowerOptions_ShutDownAfterDelay))){
     systemShutDown(0);
   }
+
+
+  DevState.status_L =
+      ((MCentral.userShutDown) ? MB_HR_Status_L_PowerOffPressed : 0)  |
+      ((MCentral.shutdownCounter) ? MB_HR_Status_L_ShuttingDown : 0);
 }
