@@ -42,6 +42,7 @@ void OUT7_OFF(void);
 void OUT_Config(void);
 void OUT_Set(u8 set);
 void REL_Set(u8 set);
+void IoPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode);
 							
 //##                                      #### ######## ################ OUT functionality:
 

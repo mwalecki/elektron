@@ -25,19 +25,19 @@ void UI_Config() {
 	GPIO_Init(KEY_Port, &GPIO_InitStructure);
 
 	// LCD
-	GLCD_Initialize();
-	GLCD_ClearScreen();
-
-	GLCD_GoTo(0, 0);GLCD_WriteString("Bt --.-V   usb    o0 ");
-	GLCD_GoTo(0, 1);GLCD_WriteString("12 --.-V   link   o1 ");
-	GLCD_GoTo(0, 2);GLCD_WriteString("05 --.-V          o2 ");
-	GLCD_GoTo(0, 3);GLCD_WriteString("M1 --.-V --C ---  o3 ");
-	GLCD_GoTo(0, 4);GLCD_WriteString("M2 --.-V --C ---     ");
-	GLCD_GoTo(0, 5);GLCD_WriteString("                     ");
-	GLCD_GoTo(0, 6);GLCD_WriteString("                     ");
-	GLCD_GoTo(0, 7);GLCD_WriteString("+-------------------+");
-	GLCD_GoTo(7*6, 7);
-	GLCD_WriteString(__DATE__);
+//	GLCD_Initialize();
+//	GLCD_ClearScreen();
+//
+//	GLCD_GoTo(0, 0);GLCD_WriteString("Bt --.-V   usb    o0 ");
+//	GLCD_GoTo(0, 1);GLCD_WriteString("12 --.-V   link   o1 ");
+//	GLCD_GoTo(0, 2);GLCD_WriteString("05 --.-V          o2 ");
+//	GLCD_GoTo(0, 3);GLCD_WriteString("M1 --.-V --C ---  o3 ");
+//	GLCD_GoTo(0, 4);GLCD_WriteString("M2 --.-V --C ---     ");
+//	GLCD_GoTo(0, 5);GLCD_WriteString("                     ");
+//	GLCD_GoTo(0, 6);GLCD_WriteString("                     ");
+//	GLCD_GoTo(0, 7);GLCD_WriteString("+-------------------+");
+//	GLCD_GoTo(7*6, 7);
+//	GLCD_WriteString(__DATE__);
 
 	UI_SpeakerConfig();
 }

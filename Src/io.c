@@ -50,3 +50,12 @@ void OUT_Set(u8 set){
 //	if(set & (1<<6)) OUT7_ON();	else OUT7_OFF();
 //	if(set & (1<<7)) OUT8_ON();	else OUT8_OFF();
 }
+
+void IoPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode){
+  GPIO_InitTypeDef GPIO_InitStructure;
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode;
+  GPIO_Init(GPIOx, &GPIO_InitStructure);
+}

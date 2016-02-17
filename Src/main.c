@@ -17,6 +17,7 @@
 #include "circbuf.h"
 
 #include "usb.h"
+#include "can.h"
 
 //##                                      #### ######## ################ GLOBALS
 USART_St			Usart1, Usart4;
@@ -67,7 +68,8 @@ int main(void)
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
-	USB_Config();
+	//USB_Config();
+	canConfig();
 
 	LED_Set(1<<0,	//mask
 			1<<0,	//newState
@@ -143,11 +145,12 @@ int main(void)
 			}
 			else{
 				temp8=1;
-				UI_LcdPrintAnalogs();
+//				UI_LcdPrintAnalogs();
 				LED_Set(1<<0, //mask
 					0<<0,	//newState
 					0<<0);//blink
 			}
+			canTestMessage();
 		}		   
 		if(STDownCnt[ST_UsartCmdTo].tick){
 			modeSwitch(M_ER_STOP);
@@ -163,7 +166,7 @@ int main(void)
 		if(STDownCnt[ST_UiProc].tick){
 			UI_SpeakerProc();
 			UI_KeyboardProc();
-			UI_LcdPrintBinaries();
+//			UI_LcdPrintBinaries();
 			STDownCnt[ST_UiProc].tick = 0;
 		}
 		if(STDownCnt[ST_SysMonitor].tick){
