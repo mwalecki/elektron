@@ -587,7 +587,7 @@ static uint16_t EE_VerifyPageFullWriteVariable(uint16_t VirtAddress, uint16_t Da
   /* Get the valid Page end Address */
   PageEndAddress = (uint32_t)((EEPROM_START_ADDRESS - 2) + (uint32_t)((1 + ValidPage) * PAGE_SIZE));
 
-  /* Check each active page address starting from begining */
+  /* Check each active page address starting from beginning */
   while (Address < PageEndAddress)
   {
     /* Verify if Address and Address+2 contents are 0xFFFFFFFF */
